@@ -1,0 +1,108 @@
+HTML
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>클럽 운영앱</title>
+    <!-- Tailwind CSS CDN (디자인을 예쁘게 만들어주는 도구) -->
+    <script src="https://cdn.tailwindcss.com"></script>
+</head>
+<body class="min-h-screen bg-[#0b0b10] flex flex-col items-center justify-center p-4 text-white font-sans">
+    
+    <div class="w-full max-w-md">
+        <!-- 상단 제목 -->
+        <h1 class="text-2xl font-bold mb-6 text-white tracking-tight">
+            클럽 운영앱
+        </h1>
+
+        <!-- 메인 카드 박스 -->
+        <div class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl">
+            
+            <!-- 상단 탭 (로그인 / 회원가입) -->
+            <div class="flex gap-2 mb-6">
+                <button id="loginTabBtn" onclick="switchTab('login')" class="px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]">
+                    로그인
+                </button>
+                <button id="signupTabBtn" onclick="switchTab('signup')" class="px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300">
+                    회원가입
+                </button>
+            </div>
+
+            <!-- 로그인 폼 -->
+            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
+                <div>
+                    <input type="email" required placeholder="이메일" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="password" required placeholder="비밀번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <button type="submit" class="w-full py-4 mt-2 bg-gradient-to-r from-[#ff4e88] to-[#ffb347] hover:opacity-90 text-zinc-950 font-bold rounded-xl transition shadow-lg shadow-pink-500/10 text-sm">
+                    로그인
+                </button>
+            </form>
+
+            <!-- 회원가입 폼 (기본은 숨김 상태) -->
+            <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-3.5 hidden">
+                <div>
+                    <input type="text" required placeholder="가입 코드 (역할별 8자리)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="email" required placeholder="이메일" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="password" required placeholder="비밀번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="text" required placeholder="이름(닉)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="text" required placeholder="전화번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="text" placeholder="추천인 전화/닉 (선택)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <button type="submit" class="w-full py-4 mt-2 bg-gradient-to-r from-[#ff4e88] to-[#ffb347] hover:opacity-90 text-zinc-950 font-bold rounded-xl transition shadow-lg shadow-pink-500/10 text-sm">
+                    가입
+                </button>
+                <p class="text-xs text-zinc-500 text-center pt-2">
+                    코드에 따라 역할(사장/스탭/삐끼)이 자동 부여됩니다.
+                </p>
+            </form>
+
+        </div>
+    </div>
+
+    <!-- 탭 전환 및 버튼 동작을 제어하는 자바스크립트 -->
+    <script>
+        function switchTab(tab) {
+            const loginTabBtn = document.getElementById('loginTabBtn');
+            const signupTabBtn = document.getElementById('signupTabBtn');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+
+            if (tab === 'login') {
+                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
+                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
+                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        function handleLogin(e) {
+            e.preventDefault();
+            alert('로그인 시뮬레이션 성공!');
+        }
+
+        function handleSignup(e) {
+            e.preventDefault();
+            alert('회원가입 시뮬레이션 성공!');
+        }
+    </script>
+</body>
+</html>
