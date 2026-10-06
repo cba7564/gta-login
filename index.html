@@ -11,7 +11,7 @@
     
     <div class="w-full max-w-md">
         <!-- 상단 제목 -->
-        <h1 id="mainTitle" class="text-3xl font-bold mb-6 text-center text-pink-500 tracking-tight">
+        <h1 class="text-3xl font-bold mb-6 text-center text-pink-500 tracking-tight">
             클럽 운영앱
         </h1>
 
@@ -40,11 +40,11 @@
                     로그인
                 </button>
                 <p class="text-xs text-zinc-500 text-center pt-2">
-                    관리자 계정: admin@admin.com / admin123
+                    사장(관리자) 계정: admin@admin.com / admin123
                 </p>
             </form>
 
-            <!-- 회원가입 폼 (기본은 숨김 상태) -->
+            <!-- 회원가입 폼 -->
             <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-3.5 hidden">
                 <div>
                     <input type="text" id="signupCode" required placeholder="가입 코드 (8자리)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
@@ -68,204 +68,12 @@
                     가입
                 </button>
                 <p class="text-xs text-zinc-500 text-center pt-2">
-                    테스트용 기본 가입 코드: <span class="text-pink-400 font-bold">12345678</span>
+                    테스트용 가입 코드 (공주/경호원용): <span class="text-pink-400 font-bold">12345678</span>
                 </p>
             </form>
         </div>
 
-        <!-- 2. 관리자 대시보드 화면 (로그인 시 표시) -->
+        <!-- 2. 사장(관리자) 대시보드 화면 -->
         <div id="adminDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden">
             <div class="flex justify-between items-center mb-6">
                 <div>
-                    <h2 class="text-xl font-bold text-white">관리자 대시보드</h2>
-                    <p class="text-xs text-zinc-400">클럽 가입 코드 발급 및 관리</p>
-                </div>
-                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">
-                    로그아웃
-                </button>
-            </div>
-
-            <!-- 코드 생성 섹션 -->
-            <div class="mb-6 p-4 bg-[#171722] rounded-xl border border-[#2b2b3d] space-y-3">
-                <h3 class="text-sm font-semibold text-pink-400">새 가입 코드 생성</h3>
-                <div>
-                    <select id="codeRole" class="w-full px-3 py-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-white text-sm focus:outline-none focus:border-pink-500">
-                        <option value="사장">사장</option>
-                        <option value="스탭">스탭</option>
-                        <option value="삐끼">삐끼</option>
-                    </select>
-                </div>
-                <button onclick="createInviteCode()" class="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-lg text-sm transition">
-                    코드 생성하기
-                </button>
-            </div>
-
-            <!-- 발급된 코드 목록 -->
-            <div>
-                <h3 class="text-sm font-semibold text-zinc-300 mb-2">발급된 가입 코드 목록</h3>
-                <div id="codeList" class="space-y-2 max-h-48 overflow-y-auto pr-1">
-                    <!-- 자바스크립트로 동적 생성됨 -->
-                </div>
-            </div>
-        </div>
-
-        <!-- 3. 일반 회원 대시보드 화면 -->
-        <div id="userDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden text-center space-y-4">
-            <h2 id="welcomeText" class="text-xl font-bold text-white">환영합니다!</h2>
-            <p class="text-sm text-zinc-400">클럽 운영앱 멤버십 인증완료</p>
-            <button onclick="logout()" class="w-full py-3 bg-zinc-800 hover:bg-zinc-700 text-white font-medium rounded-xl text-sm transition">
-                로그아웃
-            </button>
-        </div>
-
-    </div>
-
-    <!-- 로직 제어 자바스크립트 -->
-    <script>
-        // 초기 데이터 세팅 (최초 실행 시 기본 관리자 및 기본 코드 생성)
-        if (!localStorage.getItem('club_codes')) {
-            localStorage.setItem('club_codes', JSON.stringify([
-                { code: '12345678', role: '스탭', used: false }
-            ]));
-        }
-        if (!localStorage.getItem('club_users')) {
-            localStorage.setItem('club_users', JSON.stringify([
-                { email: 'admin@admin.com', pw: 'admin123', name: '관리자', role: '사장' }
-            ]));
-        }
-
-        function switchTab(tab) {
-            const loginTabBtn = document.getElementById('loginTabBtn');
-            const signupTabBtn = document.getElementById('signupTabBtn');
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
-
-            if (tab === 'login') {
-                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
-                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-            } else {
-                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
-                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
-                signupForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
-            }
-        }
-
-        // 회원가입 처리
-        function handleSignup(e) {
-            e.preventDefault();
-            const code = document.getElementById('signupCode').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const pw = document.getElementById('signupPw').value.trim();
-            const name = document.getElementById('signupName').value.trim();
-            const phone = document.getElementById('signupPhone').value.trim();
-
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            let foundCode = codes.find(c => c.code === code);
-
-            if (!foundCode) {
-                alert('유효하지 않은 가입 코드입니다.');
-                return;
-            }
-
-            let users = JSON.parse(localStorage.getItem('club_users'));
-            if (users.some(u => u.email === email)) {
-                alert('이미 가입된 이메일입니다.');
-                return;
-            }
-
-            // 사용자 등록
-            users.push({ email, pw, name, role: foundCode.role });
-            localStorage.setItem('club_users', JSON.stringify(users));
-
-            alert(`회원가입 성공! [부여된 역할: ${foundCode.role}]`);
-            switchTab('login');
-            document.getElementById('signupForm').reset();
-        }
-
-        // 로그인 처리
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const pw = document.getElementById('loginPw').value.trim();
-
-            let users = JSON.parse(localStorage.getItem('club_users'));
-            let user = users.find(u => u.email === email && u.pw === pw);
-
-            if (!user) {
-                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
-                return;
-            }
-
-            // 화면 전환
-            document.getElementById('authWrapper').classList.add('hidden');
-
-            if (user.role === '사장' && email === 'admin@admin.com') {
-                // 관리자 화면 표시
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                renderCodeList();
-            } else {
-                // 일반 유저 화면 표시
-                document.getElementById('userDashboard').classList.remove('hidden');
-                document.getElementById('welcomeTextinnerText').innerText = `${user.name} (${user.role})님 환영합니다!`;
-            }
-        }
-
-        // 로그아웃
-        function logout() {
-            document.getElementById('adminDashboard').classList.add('hidden');
-            document.getElementById('userDashboard').classList.add('hidden');
-            document.getElementById('authWrapper').classList.remove('hidden');
-            document.getElementById('loginForm').reset();
-        }
-
-        // [관리자] 가입 코드 생성
-        function createInviteCode() {
-            const role = document.getElementById('codeRole').value;
-            // 랜덤 8자리 문자 생성
-            const randomCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            codes.push({ code: randomCode, role: role, used: false });
-            localStorage.setItem('club_codes', JSON.stringify(codes));
-
-            renderCodeList();
-            alert(`새로운 가입 코드가 생성되었습니다: ${randomCode} (${role})`);
-        }
-
-        // [관리자] 코드 목록 렌더링
-        function renderCodeList() {
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            const codeListEl = document.getElementById('codeList');
-            codeListEl.innerHTML = '';
-
-            if (codes.length === 0) {
-                codeListEl.innerHTML = '<p class="text-xs text-zinc-500 text-center py-2">생성된 코드가 없습니다.</p>';
-                return;
-            }
-
-            codes.forEach((item, index) => {
-                codeListEl.innerHTML += `
-                    <div class="flex justify-between items-center p-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-xs">
-                        <div>
-                            <span class="font-bold text-pink-400 font-mono text-sm">${item.code}</span>
-                            <span class="ml-2 px-2 py-0.5 bg-zinc-800 text-zinc-300 rounded">${item.role}</span>
-                        </div>
-                        <button onclick="deleteCode(${index})" class="text-zinc-500 hover:text-red-400 transition">삭제</button>
-                    </div>
-                `;
-            });
-        }
-
-        // [관리자] 코드 삭제
-        function deleteCode(index) {
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            codes.splice(index, 1);
-            localStorage.setItem('club_codes', JSON.stringify(codes));
-            renderCodeList();
-        }
-    </script>
-</body>
-</html>
