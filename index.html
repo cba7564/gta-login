@@ -3,407 +3,360 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>클럽 운영앱</title>
+    <title>P!NK PANTY - 공주 클럽 운영앱</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
+        body { font-family: 'Pretendard', sans-serif; }
+        .neon-glow {
+            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3), inset 0 0 15px rgba(236, 72, 153, 0.1);
+        }
+        .neon-text {
+            text-shadow: 0 0 10px rgba(236, 72, 153, 0.7), 0 0 20px rgba(236, 72, 153, 0.5);
+        }
+    </style>
 </head>
-<body class="min-h-screen bg-[#0b0b10] flex flex-col items-center justify-center p-4 text-white font-sans">
+<body class="min-h-screen bg-[#09050b] text-white flex flex-col items-center p-4 md:p-8">
     
-    <div class="w-full max-w-md">
-        <!-- 상단 제목 -->
-        <h1 class="text-3xl font-bold mb-6 text-center text-pink-500 tracking-tight">
-            클럽 운영앱
-        </h1>
+    <div class="w-full max-w-4xl mx-auto space-y-6">
+        
+        <!-- 상단 타이틀 -->
+        <div class="text-center space-y-2 py-4 border-b border-pink-500/20">
+            <h1 class="text-3xl md:text-4xl font-extrabold text-pink-400 tracking-wider neon-text">
+                P!NK PANTY • 공주 조직도 & 출퇴근부
+            </h1>
+            <p class="text-xs text-pink-300/70">P.P의 모든 멤버는 각자의 직급에 맞는 권한과 책임을 준수합니다.</p>
+        </div>
 
-        <!-- 1. 로그인 / 회원가입 화면 -->
-        <div id="authWrapper" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl">
+        <!-- 탭 메뉴 -->
+        <div class="flex justify-center gap-3">
+            <button onclick="switchTab('org')" id="btnOrg" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all bg-pink-600 text-white shadow-lg shadow-pink-600/30">
+                👑 조직도 및 출퇴근
+            </button>
+            <button onclick="switchTab('logs')" id="btnLogs" class="px-6 py-2.5 rounded-xl font-bold text-sm transition-all bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20 hover:text-white">
+                📊 근무 시간 집계표
+            </button>
+        </div>
+
+        <!-- 1. 조직도 & 출퇴근 카드 화면 -->
+        <div id="viewOrg" class="space-y-6">
             
-            <!-- 상단 탭 (로그인 / 회원가입) -->
-            <div class="flex gap-2 mb-6">
-                <button id="loginTabBtn" onclick="switchTab('login')" class="px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]">
-                    로그인
-                </button>
-                <button id="signupTabBtn" onclick="switchTab('signup')" class="px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300">
-                    회원가입
-                </button>
+            <!-- JOKER (밤망이) 상단 특별 카드 -->
+            <div class="flex justify-center">
+                <div onclick="openCheckInModal('밤망이', 'JOKER')" class="w-full max-w-sm bg-gradient-to-b from-[#25102a] to-[#130717] border-2 border-pink-500 rounded-2xl p-5 text-center cursor-pointer transform hover:scale-105 transition neon-glow relative overflow-hidden">
+                    <div class="absolute top-2 right-3 text-xs px-2 py-0.5 bg-pink-500 text-white rounded-full font-bold">JOKER</div>
+                    <div class="w-20 h-20 mx-auto rounded-full bg-pink-500/20 border-2 border-pink-400 flex items-center justify-center text-2xl font-black mb-3 text-pink-300 shadow-inner">
+                        👑
+                    </div>
+                    <h2 class="text-xl font-bold text-white">밤망이</h2>
+                    <p class="text-xs text-pink-400 font-medium mt-1">P.P를 대표하는 존재</p>
+                    <div id="status_밤망이" class="mt-3 inline-block px-3 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-400 border border-zinc-700">
+                        🔴 퇴근 상태
+                    </div>
+                </div>
             </div>
 
-            <!-- 로그인 폼 -->
-            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <input type="email" id="loginEmail" required placeholder="이메일" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+            <!-- 하위 멤버 그리드 (Heart, Diamond, Spade, Clover) -->
+            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4">
+                
+                <!-- 랑랑 (Ace) -->
+                <div onclick="openCheckInModal('랑랑', 'Ace (Heart)')" class="bg-[#170a1c] border border-pink-500/30 rounded-2xl p-4 text-center cursor-pointer hover:border-pink-500 transition hover:bg-[#200d26]">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] px-2 py-0.5 bg-rose-500/20 text-rose-300 rounded font-bold border border-rose-500/30">HEART • Ace</span>
+                    </div>
+                    <div class="w-14 h-14 mx-auto rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-lg mb-2">💎</div>
+                    <h3 class="font-bold text-white text-base">랑랑</h3>
+                    <p class="text-[11px] text-pink-300/60 mt-0.5">P.P의 중심이 되는 멤버</p>
+                    <div id="status_랑랑" class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-400">퇴근</div>
                 </div>
-                <div>
-                    <input type="password" id="loginPw" required placeholder="비밀번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
-                </div>
-                <button type="submit" class="w-full py-4 mt-2 bg-gradient-to-r from-[#ff4e88] to-[#ffb347] hover:opacity-90 text-zinc-950 font-bold rounded-xl transition shadow-lg shadow-pink-500/10 text-sm">
-                    로그인
-                </button>
-                <div class="text-[11px] text-zinc-500 space-y-1 pt-2 border-t border-zinc-800">
-                    <p>🔧 관리자(코드발급권한O): <span class="text-zinc-300 font-mono">admin@admin.com</span> / <span class="text-zinc-300 font-mono">admin123</span></p>
-                    <p>👑 사장(코드발급X, 전체조회): <span class="text-zinc-300 font-mono">boss@boss.com</span> / <span class="text-zinc-300 font-mono">boss123</span></p>
-                    <p>✨ 직원체험(공주): <span class="text-zinc-300 font-mono">princess@club.com</span> / <span class="text-zinc-300 font-mono">1234</span></p>
-                </div>
-            </form>
 
-            <!-- 회원가입 폼 -->
-            <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-3.5 hidden">
-                <div>
-                    <input type="text" id="signupCode" required placeholder="가입 코드 (8자리)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                <!-- 뽀오니 (King) -->
+                <div onclick="openCheckInModal('뽀오니', 'King (Heart)')" class="bg-[#170a1c] border border-pink-500/30 rounded-2xl p-4 text-center cursor-pointer hover:border-pink-500 transition hover:bg-[#200d26]">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] px-2 py-0.5 bg-rose-500/20 text-rose-300 rounded font-bold border border-rose-500/30">HEART • King</span>
+                    </div>
+                    <div class="w-14 h-14 mx-auto rounded-full bg-rose-500/10 border border-rose-500/30 flex items-center justify-center text-lg mb-2">👑</div>
+                    <h3 class="font-bold text-white text-base">뽀오니</h3>
+                    <p class="text-[11px] text-pink-300/60 mt-0.5">P.P의 중심이 되는 멤버</p>
+                    <div id="status_뽀오니" class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-400">퇴근</div>
                 </div>
-                <div>
-                    <input type="email" id="signupEmail" required placeholder="이메일" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
-                </div>
-                <div>
-                    <input type="password" id="signupPw" required placeholder="비밀번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
-                </div>
-                <div>
-                    <input type="text" id="signupName" required placeholder="이름(닉)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
-                </div>
-                <div>
-                    <input type="text" id="signupPhone" required placeholder="전화번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
-                </div>
-                <div>
-                    <input type="text" id="signupReferrer" placeholder="추천인 전화/닉 (선택)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
-                </div>
-                <button type="submit" class="w-full py-4 mt-2 bg-gradient-to-r from-[#ff4e88] to-[#ffb347] hover:opacity-90 text-zinc-950 font-bold rounded-xl transition shadow-lg shadow-pink-500/10 text-sm">
-                    가입
-                </button>
-                <p class="text-xs text-zinc-500 text-center pt-2">
-                    기본 테스트 코드 (공주용): <span class="text-pink-400 font-bold">12345678</span> | (경호원용): <span class="text-pink-400 font-bold">GUARD567</span>
-                </p>
-            </form>
-        </div>
 
-        <!-- 2. 관리자 대시보드 화면 (가입코드 발급 가능) -->
-        <div id="adminDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden space-y-4">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-bold text-white">관리자 대시보드</h2>
-                    <p class="text-xs text-pink-400">코드 발급 및 시스템 관리</p>
+                <!-- 김나박이 (Queen) -->
+                <div onclick="openCheckInModal('김나박이', 'Queen (Diamond)')" class="bg-[#170a1c] border border-pink-500/30 rounded-2xl p-4 text-center cursor-pointer hover:border-pink-500 transition hover:bg-[#200d26]">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] px-2 py-0.5 bg-fuchsia-500/20 text-fuchsia-300 rounded font-bold border border-fuchsia-500/30">DIAMOND • Queen</span>
+                    </div>
+                    <div class="w-14 h-14 mx-auto rounded-full bg-fuchsia-500/10 border border-fuchsia-500/30 flex items-center justify-center text-lg mb-2">💠</div>
+                    <h3 class="font-bold text-white text-base">김나박이</h3>
+                    <p class="text-[11px] text-pink-300/60 mt-0.5">P.P에서 신뢰받는 멤버</p>
+                    <div id="status_김나박이" class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-400">퇴근</div>
                 </div>
-                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">
-                    로그아웃
-                </button>
-            </div>
 
-            <!-- 코드 생성 섹션 -->
-            <div class="p-4 bg-[#171722] rounded-xl border border-[#2b2b3d] space-y-3">
-                <h3 class="text-sm font-semibold text-pink-400">새 가입 코드 발급</h3>
-                <div>
-                    <select id="codeRole" class="w-full px-3 py-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-white text-sm focus:outline-none focus:border-pink-500">
-                        <option value="공주">공주</option>
-                        <option value="경호원">경호원</option>
-                    </select>
+                <!-- 하연지 (Jack) -->
+                <div onclick="openCheckInModal('하연지', 'Jack (Diamond)')" class="bg-[#170a1c] border border-pink-500/30 rounded-2xl p-4 text-center cursor-pointer hover:border-pink-500 transition hover:bg-[#200d26]">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] px-2 py-0.5 bg-fuchsia-500/20 text-fuchsia-300 rounded font-bold border border-fuchsia-500/30">DIAMOND • Jack</span>
+                    </div>
+                    <div class="w-14 h-14 mx-auto rounded-full bg-fuchsia-500/10 border border-fuchsia-500/30 flex items-center justify-center text-lg mb-2">♠️</div>
+                    <h3 class="font-bold text-white text-base">하연지</h3>
+                    <p class="text-[11px] text-pink-300/60 mt-0.5">P.P에서 신뢰받는 멤버</p>
+                    <div id="status_하연지" class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-400">퇴근</div>
                 </div>
-                <button onclick="createInviteCode()" class="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-lg text-sm transition">
-                    코드 생성하기
-                </button>
-            </div>
 
-            <!-- 발급된 코드 목록 -->
-            <div>
-                <h3 class="text-sm font-semibold text-zinc-300 mb-2">발급된 가입 코드 목록</h3>
-                <div id="codeList" class="space-y-2 max-h-32 overflow-y-auto pr-1"></div>
-            </div>
+                <!-- 공주아 (10) -->
+                <div onclick="openCheckInModal('공주아', '10 (Spade)')" class="bg-[#170a1c] border border-pink-500/30 rounded-2xl p-4 text-center cursor-pointer hover:border-pink-500 transition hover:bg-[#200d26]">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] px-2 py-0.5 bg-purple-500/20 text-purple-300 rounded font-bold border border-purple-500/30">SPADE • 10</span>
+                    </div>
+                    <div class="w-14 h-14 mx-auto rounded-full bg-purple-500/10 border border-purple-500/30 flex items-center justify-center text-lg mb-2">⚔️</div>
+                    <h3 class="font-bold text-white text-base">공주아</h3>
+                    <p class="text-[11px] text-pink-300/60 mt-0.5">P.P와 함께 활동하는 멤버</p>
+                    <div id="status_공주아" class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-400">퇴근</div>
+                </div>
 
-            <!-- 전체 직원 출근 현황 -->
-            <div>
-                <h3 class="text-sm font-semibold text-zinc-300 mb-2">전체 직원 출근 현황</h3>
-                <div id="adminAttendanceList" class="space-y-2 max-h-32 overflow-y-auto pr-1"></div>
+                <!-- 냐냥 (9) -->
+                <div onclick="openCheckInModal('냐냥', '9 (Clover)')" class="bg-[#170a1c] border border-pink-500/30 rounded-2xl p-4 text-center cursor-pointer hover:border-pink-500 transition hover:bg-[#200d26]">
+                    <div class="flex justify-between items-center mb-2">
+                        <span class="text-[10px] px-2 py-0.5 bg-emerald-500/20 text-emerald-300 rounded font-bold border border-emerald-500/30">CLOVER • 9</span>
+                    </div>
+                    <div class="w-14 h-14 mx-auto rounded-full bg-emerald-500/10 border border-emerald-500/30 flex items-center justify-center text-lg mb-2">🍀</div>
+                    <h3 class="font-bold text-white text-base">냐냥</h3>
+                    <p class="text-[11px] text-pink-300/60 mt-0.5">P.P의 시작을 함께하는 멤버</p>
+                    <div id="status_냐냥" class="mt-3 inline-block px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-400">퇴근</div>
+                </div>
+
             </div>
         </div>
 
-        <!-- 3. 사장 대시보드 화면 (가입코드 발급 권한 없음, 현황 조회만) -->
-        <div id="bossDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden space-y-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 class="text-xl font-bold text-white">사장 대시보드</h2>
-                    <p class="text-xs text-amber-400">클럽 운영 총괄 및 직원 출근부</p>
-                </div>
-                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">
-                    로그아웃
-                </button>
+        <!-- 2. 근무 시간 집계표 화면 -->
+        <div id="viewLogs" class="bg-[#130717] border border-pink-500/30 rounded-2xl p-6 shadow-xl hidden space-y-4">
+            <div class="flex justify-between items-center border-b border-pink-500/20 pb-3">
+                <h2 class="text-lg font-bold text-pink-400">📈 출퇴근 및 근무 시간 집계 기록</h2>
+                <button onclick="clearLogs()" class="px-3 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs hover:bg-red-500 hover:text-white transition">기록 초기화</button>
             </div>
-
-            <!-- 직원 출근 현황 요약 -->
-            <div>
-                <h3 class="text-sm font-semibold text-zinc-300 mb-2">📊 전체 직원 출근 현황</h3>
-                <div id="bossAttendanceList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-            </div>
-        </div>
-
-        <!-- 4. 공주 / 경호원 직원 대시보드 화면 -->
-        <div id="workerDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden space-y-6">
-            <div class="flex justify-between items-center">
-                <div>
-                    <h2 id="workerTitle" class="text-xl font-bold text-white">직원 전용 페이지</h2>
-                    <p id="workerRoleBadge" class="text-xs text-pink-400 mt-0.5">직급</p>
-                </div>
-                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">
-                    로그아웃
-                </button>
-            </div>
-
-            <!-- 출근 / 퇴근 입력 박스 -->
-            <div class="p-5 bg-[#171722] rounded-xl border border-[#2b2b3d] text-center space-y-4">
-                <div id="attendanceStatus" class="text-sm font-medium text-zinc-400">
-                    현재 상태: <span class="text-red-400 font-bold">퇴근(미출근)</span> 상태입니다.
-                </div>
-                <div class="grid grid-cols-2 gap-3">
-                    <button onclick="doCheckIn()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-900/20">
-                        출근하기 🟢
-                    </button>
-                    <button onclick="doCheckOut()" class="py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-rose-900/20">
-                        퇴근하기 🔴
-                    </button>
-                </div>
-                <div id="attendanceTimeLog" class="text-xs text-zinc-500 pt-1">
-                    기록 없음
-                </div>
+            <div class="overflow-x-auto">
+                <table class="w-full text-left text-xs">
+                    <thead>
+                        <tr class="border-b border-pink-500/25 text-pink-300">
+                            <th class="py-3 px-2">날짜</th>
+                            <th class="py-3 px-2">멤버명 (직급)</th>
+                            <th class="py-3 px-2">출근 시간</th>
+                            <th class="py-3 px-2">퇴근 시간</th>
+                            <th class="py-3 px-2 text-right">총 근무 시간</th>
+                        </tr>
+                    </thead>
+                    <tbody id="logsTableBody" class="divide-y divide-pink-500/10">
+                        <!-- 동적 삽입 -->
+                    </tbody>
+                </table>
             </div>
         </div>
 
     </div>
 
-    <!-- 로직 제어 자바스크립트 -->
+    <!-- 출퇴근 컨트롤 모달 -->
+    <div id="actionModal" class="fixed inset-0 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 hidden z-50">
+        <div class="bg-[#1a0f1c] border-2 border-pink-500 rounded-2xl w-full max-w-sm p-6 text-center space-y-4 neon-glow">
+            <h3 id="modalMemberName" class="text-2xl font-extrabold text-white">멤버 이름</h3>
+            <p id="modalMemberRank" class="text-xs text-pink-400 font-semibold">직급</p>
+            
+            <div id="modalCurrentState" class="p-3 bg-[#110714] rounded-xl border border-pink-500/20 text-sm font-medium text-zinc-300">
+                상태 확인 중...
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 pt-2">
+                <button onclick="handleCheckIn()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-900/30">
+                    🟢 출근하기
+                </button>
+                <button onclick="handleCheckOut()" class="py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-rose-900/30">
+                    🔴 퇴근하기
+                </button>
+            </div>
+
+            <button onclick="closeModal()" class="w-full py-2 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 rounded-xl text-xs transition mt-2">
+                닫기
+            </button>
+        </div>
+    </div>
+
+    <!-- 스크립트 로직 -->
     <script>
-        // 버전 체크를 통해 예전 꼬인 로컬 데이터 자동 초기화
-        const DB_VERSION = 'club_app_v2_2026';
-        if (localStorage.getItem('club_db_ver') !== DB_VERSION) {
-            localStorage.clear();
-            localStorage.setItem('club_db_ver', DB_VERSION);
+        let currentSelectedMember = null;
+
+        // 데이터 초기화 및 로드
+        function getAttendanceData() {
+            return JSON.parse(localStorage.getItem('pp_attendance_active') || '{}');
+        }
+        function setAttendanceData(data) {
+            localStorage.setItem('pp_attendance_active', JSON.stringify(data));
+        }
+        function getLogsData() {
+            return JSON.parse(localStorage.getItem('pp_attendance_logs') || '[]');
+        }
+        function setLogsData(data) {
+            localStorage.setItem('pp_attendance_logs', JSON.stringify(data));
         }
 
-        // 초기 데이터 세팅
-        if (!localStorage.getItem('club_codes')) {
-            localStorage.setItem('club_codes', JSON.stringify([
-                { code: '12345678', role: '공주' },
-                { code: 'GUARD567', role: '경호원' }
-            ]));
-        }
-        if (!localStorage.getItem('club_users')) {
-            localStorage.setItem('club_users', JSON.stringify([
-                { email: 'admin@admin.com', pw: 'admin123', name: '최고관리자', role: '관리자' },
-                { email: 'boss@boss.com', pw: 'boss123', name: '대표사장', role: '사장' },
-                { email: 'princess@club.com', pw: '1234', name: '예시공주', role: '공주' }
-            ]));
-        }
-        if (!localStorage.getItem('club_attendance')) {
-            localStorage.setItem('club_attendance', JSON.stringify({
-                'princess@club.com': { status: '출근', time: '오늘 근무 시작', name: '예시공주', role: '공주' }
-            }));
-        }
-
-        let currentUser = null;
-
+        // 탭 전환
         function switchTab(tab) {
-            const loginTabBtn = document.getElementById('loginTabBtn');
-            const signupTabBtn = document.getElementById('signupTabBtn');
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
+            const btnOrg = document.getElementById('btnOrg');
+            const btnLogs = document.getElementById('btnLogs');
+            const viewOrg = document.getElementById('viewOrg');
+            const viewLogs = document.getElementById('viewLogs');
 
-            if (tab === 'login') {
-                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
-                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
+            if (tab === 'org') {
+                btnOrg.className = "px-6 py-2.5 rounded-xl font-bold text-sm transition-all bg-pink-600 text-white shadow-lg shadow-pink-600/30";
+                btnLogs.className = "px-6 py-2.5 rounded-xl font-bold text-sm transition-all bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20 hover:text-white";
+                viewOrg.classList.remove('hidden');
+                viewLogs.classList.add('hidden');
+                updateOrgBadges();
             } else {
-                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
-                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
-                signupForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
+                btnLogs.className = "px-6 py-2.5 rounded-xl font-bold text-sm transition-all bg-pink-600 text-white shadow-lg shadow-pink-600/30";
+                btnOrg.className = "px-6 py-2.5 rounded-xl font-bold text-sm transition-all bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20 hover:text-white";
+                viewLogs.classList.remove('hidden');
+                viewOrg.classList.add('hidden');
+                renderLogsTable();
             }
         }
 
-        // 회원가입
-        function handleSignup(e) {
-            e.preventDefault();
-            const code = document.getElementById('signupCode').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const pw = document.getElementById('signupPw').value.trim();
-            const name = document.getElementById('signupName').value.trim();
-            const phone = document.getElementById('signupPhone').value.trim();
+        // 모달 열기
+        function openCheckInModal(name, rank) {
+            currentSelectedMember = { name, rank };
+            document.getElementById('modalMemberName').innerText = name;
+            document.getElementById('modalMemberRank').innerText = rank;
 
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            let foundCode = codes.find(c => c.code === code);
+            let activeData = getAttendanceData();
+            let record = activeData[name];
+            let stateEl = document.getElementById('modalCurrentState');
 
-            if (!foundCode) {
-                alert('유효하지 않은 가입 코드입니다.');
-                return;
-            }
-
-            let users = JSON.parse(localStorage.getItem('club_users'));
-            if (users.some(u => u.email === email)) {
-                alert('이미 가입된 이메일입니다.');
-                return;
-            }
-
-            users.push({ email, pw, name, role: foundCode.role, phone });
-            localStorage.setItem('club_users', JSON.stringify(users));
-
-            alert(`회원가입 성공! [부여된 직급: ${foundCode.role}]`);
-            switchTab('login');
-            document.getElementById('signupForm').reset();
-        }
-
-        // 로그인
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const pw = document.getElementById('loginPw').value.trim();
-
-            let users = JSON.parse(localStorage.getItem('club_users'));
-            let user = users.find(u => u.email === email && u.pw === pw);
-
-            if (!user) {
-                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
-                return;
-            }
-
-            currentUser = user;
-            document.getElementById('authWrapper').classList.add('hidden');
-
-            if (user.role === '관리자') {
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                renderCodeList();
-                renderAttendanceList('adminAttendanceList');
-            } else if (user.role === '사장') {
-                document.getElementById('bossDashboard').classList.remove('hidden');
-                renderAttendanceList('bossAttendanceList');
+            if (record && record.status === '출근') {
+                stateEl.innerHTML = `현재 상태: <span class="text-emerald-400 font-bold">근무 중</span><br><span class="text-[11px] text-zinc-400">출근 시각: ${record.timeStr}</span>`;
             } else {
-                document.getElementById('workerDashboard').classList.remove('hidden');
-                document.getElementById('workerTitle').innerText = `${user.name}님 환영합니다!`;
-                document.getElementById('workerRoleBadge').innerText = `직급: ${user.role}`;
-                updateAttendanceUI();
+                stateEl.innerHTML = `현재 상태: <span class="text-rose-400 font-bold">퇴근(미출근)</span>`;
             }
+
+            document.getElementById('actionModal').classList.remove('hidden');
         }
 
-        // 로그아웃
-        function logout() {
-            currentUser = null;
-            document.getElementById('adminDashboard').classList.add('hidden');
-            document.getElementById('bossDashboard').classList.add('hidden');
-            document.getElementById('workerDashboard').classList.add('hidden');
-            document.getElementById('authWrapper').classList.remove('hidden');
-            document.getElementById('loginForm').reset();
+        function closeModal() {
+            document.getElementById('actionModal').classList.add('hidden');
+            currentSelectedMember = null;
+            updateOrgBadges();
         }
 
-        // [관리자 전용] 가입 코드 생성
-        function createInviteCode() {
-            const role = document.getElementById('codeRole').value;
-            const randomCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+        // 출근 처리
+        function handleCheckIn() {
+            if (!currentSelectedMember) return;
+            let activeData = getAttendanceData();
+            let now = new Date();
+            
+            activeData[currentSelectedMember.name] = {
+                status: '출근',
+                timestamp: now.getTime(),
+                dateStr: now.toLocaleDateString(),
+                timeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                rank: currentSelectedMember.rank
+            };
 
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            codes.push({ code: randomCode, role: role });
-            localStorage.setItem('club_codes', JSON.stringify(codes));
-
-            renderCodeList();
-            alert(`새로운 가입 코드가 발급되었습니다: ${randomCode} (${role})`);
+            setAttendanceData(activeData);
+            alert(`[${currentSelectedMember.name}] 출근 처리가 완료되었습니다! 🟢`);
+            closeModal();
         }
 
-        // [관리자 전용] 코드 목록 표시
-        function renderCodeList() {
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            const codeListEl = document.getElementById('codeList');
-            codeListEl.innerHTML = '';
+        // 퇴근 처리 및 시간 계산
+        function handleCheckOut() {
+            if (!currentSelectedMember) return;
+            let activeData = getAttendanceData();
+            let record = activeData[currentSelectedMember.name];
 
-            if (codes.length === 0) {
-                codeListEl.innerHTML = '<p class="text-xs text-zinc-500 text-center py-2">발급된 코드가 없습니다.</p>';
+            if (!record || record.status !== '출근') {
+                alert('현재 출근 상태가 아닙니다.');
                 return;
             }
 
-            codes.forEach((item, index) => {
-                codeListEl.innerHTML += `
-                    <div class="flex justify-between items-center p-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-xs">
-                        <div>
-                            <span class="font-bold text-pink-400 font-mono text-sm">${item.code}</span>
-                            <span class="ml-2 px-2 py-0.5 bg-zinc-800 text-zinc-300 rounded">${item.role}</span>
-                        </div>
-                        <button onclick="deleteCode(${index})" class="text-zinc-500 hover:text-red-400 transition">삭제</button>
-                    </div>
+            let now = new Date();
+            let checkInTime = new Date(record.timestamp);
+            let diffMs = now - checkInTime; // 밀리초 차이
+            
+            let diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
+            let diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+            let workDurationStr = `${diffHrs}시간 ${diffMins}분`;
+
+            // 로그 기록 저장
+            let logs = getLogsData();
+            logs.unshift({
+                date: record.dateStr,
+                name: currentSelectedMember.name,
+                rank: currentSelectedMember.rank,
+                checkIn: record.timeStr,
+                checkOut: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                duration: workDurationStr
+            });
+            setLogsData(logs);
+
+            // 활성 출근부에서 제거
+            delete activeData[currentSelectedMember.name];
+            setAttendanceData(activeData);
+
+            alert(`[${currentSelectedMember.name}] 퇴근 완료!\n총 근무 시간: ${workDurationStr} 🔴`);
+            closeModal();
+        }
+
+        // 조직도 카드 상태 뱃지 업데이트
+        function updateOrgBadges() {
+            let activeData = getAttendanceData();
+            let members = ['밤망이', '랑랑', '뽀오니', '김나박이', '하연지', '공주아', '냐냥'];
+
+            members.forEach(name => {
+                let badge = document.getElementById(`status_${name}`);
+                if (!badge) return;
+                let rec = activeData[name];
+                if (rec && rec.status === '출근') {
+                    badge.className = "mt-3 inline-block px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40";
+                    badge.innerText = "🟢 근무 중";
+                } else {
+                    badge.className = "mt-3 inline-block px-3 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-400 border border-zinc-700";
+                    badge.innerText = "🔴 퇴근 상태";
+                }
+            });
+        }
+
+        // 근무 시간 집계표 렌더링
+        function renderLogsTable() {
+            let logs = getLogsData();
+            let tbody = document.getElementById('logsTableBody');
+            tbody.innerHTML = '';
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="5" class="py-6 text-center text-zinc-500">아직 집계된 출퇴근 기록이 없습니다.</td></tr>`;
+                return;
+            }
+
+            logs.forEach(log => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-pink-500/5 transition">
+                        <td class="py-3 px-2 text-zinc-300">${log.date}</td>
+                        <td class="py-3 px-2 font-bold text-white">${log.name} <span class="text-[10px] text-pink-400 font-normal">(${log.rank})</span></td>
+                        <td class="py-3 px-2 text-emerald-400">${log.checkIn}</td>
+                        <td class="py-3 px-2 text-rose-400">${log.checkOut}</td>
+                        <td class="py-3 px-2 text-right font-bold text-pink-300">${log.duration}</td>
+                    </tr>
                 `;
             });
         }
 
-        function deleteCode(index) {
-            let codes = JSON.parse(localStorage.getItem('club_codes'));
-            codes.splice(index, 1);
-            localStorage.setItem('club_codes', JSON.stringify(codes));
-            renderCodeList();
-        }
-
-        // [공주 / 경호원] 출근하기
-        function doCheckIn() {
-            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
-            const now = new Date().toLocaleString();
-            attendance[currentUser.email] = { status: '출근', time: now, name: currentUser.name, role: currentUser.role };
-            localStorage.setItem('club_attendance', JSON.stringify(attendance));
-            updateAttendanceUI();
-            alert('출근 처리가 완료되었습니다!');
-        }
-
-        // [공주 / 경호원] 퇴근하기
-        function doCheckOut() {
-            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
-            const now = new Date().toLocaleString();
-            attendance[currentUser.email] = { status: '퇴근', time: now, name: currentUser.name, role: currentUser.role };
-            localStorage.setItem('club_attendance', JSON.stringify(attendance));
-            updateAttendanceUI();
-            alert('퇴근 처리가 완료되었습니다!');
-        }
-
-        // 직원 본인 화면 출근 상태 업데이트
-        function updateAttendanceUI() {
-            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
-            let myRecord = attendance[currentUser.email];
-            const statusEl = document.getElementById('attendanceStatus');
-            const timeLogEl = document.getElementById('attendanceTimeLog');
-
-            if (myRecord && myRecord.status === '출근') {
-                statusEl.innerHTML = `현재 상태: <span class="text-emerald-400 font-bold">근무 중 (출근 완료)</span>`;
-                timeLogEl.innerText = `최근 출근 시간: ${myRecord.time}`;
-            } else {
-                statusEl.innerHTML = `현재 상태: <span class="text-rose-400 font-bold">퇴근(미출근)</span>`;
-                timeLogEl.innerText = myRecord ? `최근 퇴근 시간: ${myRecord.time}` : '오늘 기록 없음';
+        function clearLogs() {
+            if (confirm('모든 출퇴근 집계 기록을 초기화하시겠습니까?')) {
+                localStorage.removeItem('pp_attendance_logs');
+                renderLogsTable();
             }
         }
 
-        // [관리자 / 사장 공용] 전체 직원 출근 현황 조회 렌더러
-        function renderAttendanceList(elementId) {
-            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
-            let users = JSON.parse(localStorage.getItem('club_users'));
-            const listEl = document.getElementById(elementId);
-            listEl.innerHTML = '';
-
-            let workers = users.filter(u => u.role !== '관리자' && u.role !== '사장');
-
-            if (workers.length === 0) {
-                listEl.innerHTML = '<p class="text-xs text-zinc-500 text-center py-2">등록된 직원이 없습니다.</p>';
-                return;
-            }
-
-            workers.forEach(w => {
-                let rec = attendance[w.email];
-                let statusBadge = rec && rec.status === '출근' 
-                    ? '<span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded">근무중</span>' 
-                    : '<span class="px-2 py-0.5 bg-zinc-800 text-zinc-500 rounded">퇴근/미출근</span>';
-                let timeText = rec ? rec.time : '기록 없음';
-
-                listEl.innerHTML += `
-                    <div class="flex justify-between items-center p-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-xs">
-                        <div>
-                            <span class="font-bold text-white">${w.name}</span>
-                            <span class="ml-1 px-1.5 py-0.5 bg-zinc-800 text-zinc-300 rounded text-[10px]">${w.role}</span>
-                        </div>
-                        <div class="text-right">
-                            ${statusBadge}
-                            <div class="text-[10px] text-zinc-500 mt-0.5">${timeText}</div>
-                        </div>
-                    </div>
-                `;
-            });
-        }
+        // 첫 로드 시 상태 업데이트
+        window.onload = function() {
+            updateOrgBadges();
+        };
     </script>
 </body>
 </html>
