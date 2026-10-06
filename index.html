@@ -51,4 +51,353 @@
                     <input type="text" id="signupCode" required placeholder="가입 코드 (8자리)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
                 </div>
                 <div>
-                    <input type="email" id="signupEmail" required placeholder="이메일" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white
+                    <input type="email" id="signupEmail" required placeholder="이메일" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="password" id="signupPw" required placeholder="비밀번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="text" id="signupName" required placeholder="이름(닉)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="text" id="signupPhone" required placeholder="전화번호" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <div>
+                    <input type="text" id="signupReferrer" placeholder="추천인 전화/닉 (선택)" class="w-full px-4 py-3.5 bg-[#171722] border border-[#2b2b3d] rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 transition text-sm">
+                </div>
+                <button type="submit" class="w-full py-4 mt-2 bg-gradient-to-r from-[#ff4e88] to-[#ffb347] hover:opacity-90 text-zinc-950 font-bold rounded-xl transition shadow-lg shadow-pink-500/10 text-sm">
+                    가입
+                </button>
+                <p class="text-xs text-zinc-500 text-center pt-2">
+                    기본 테스트 코드 (사장용): <span class="text-pink-400 font-bold">BOSS1234</span> | (공주/경호원용): <span class="text-pink-400 font-bold">12345678</span>
+                </p>
+            </form>
+        </div>
+
+        <!-- 2. 관리자 대시보드 화면 (가입코드 발급 가능) -->
+        <div id="adminDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 class="text-xl font-bold text-white">관리자 대시보드</h2>
+                    <p class="text-xs text-pink-400">코드 발급 및 시스템 관리</p>
+                </div>
+                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">
+                    로그아웃
+                </button>
+            </div>
+
+            <!-- 코드 생성 섹션 -->
+            <div class="mb-6 p-4 bg-[#171722] rounded-xl border border-[#2b2b3d] space-y-3">
+                <h3 class="text-sm font-semibold text-pink-400">새 가입 코드 발급</h3>
+                <div>
+                    <select id="codeRole" class="w-full px-3 py-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-white text-sm focus:outline-none focus:border-pink-500">
+                        <option value="사장">사장</option>
+                        <option value="공주">공주</option>
+                        <option value="경호원">경호원</option>
+                    </select>
+                </div>
+                <button onclick="createInviteCode()" class="w-full py-2.5 bg-pink-500 hover:bg-pink-600 text-white font-bold rounded-lg text-sm transition">
+                    코드 생성하기
+                </button>
+            </div>
+
+            <!-- 발급된 코드 목록 -->
+            <div>
+                <h3 class="text-sm font-semibold text-zinc-300 mb-2">발급된 가입 코드 목록</h3>
+                <div id="codeList" class="space-y-2 max-h-40 overflow-y-auto pr-1 mb-6"></div>
+            </div>
+
+            <!-- 전체 직원 출근 현황 -->
+            <div>
+                <h3 class="text-sm font-semibold text-zinc-300 mb-2">전체 직원 출근 현황</h3>
+                <div id="adminAttendanceList" class="space-y-2 max-h-36 overflow-y-auto pr-1"></div>
+            </div>
+        </div>
+
+        <!-- 3. 사장 대시보드 화면 (가입코드 발급 권한 없음, 나머지 관리/현황 조회 권한) -->
+        <div id="bossDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 class="text-xl font-bold text-white">사장 대시보드</h2>
+                    <p class="text-xs text-amber-400">클럽 운영 총괄 및 직원 출근부</p>
+                </div>
+                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">
+                    로그아웃
+                </button>
+            </div>
+
+            <!-- 직원 출근 현황 요약 -->
+            <div>
+                <h3 class="text-sm font-semibold text-zinc-300 mb-2">📊 전체 직원 출근 현황</h3>
+                <div id="bossAttendanceList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
+            </div>
+        </div>
+
+        <!-- 4. 공주 / 경호원 직원 대시보드 화면 -->
+        <div id="workerDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden space-y-6">
+            <div class="flex justify-between items-center">
+                <div>
+                    <h2 id="workerTitle" class="text-xl font-bold text-white">직원 전용 페이지</h2>
+                    <p id="workerRoleBadge" class="text-xs text-pink-400 mt-0.5">직급</p>
+                </div>
+                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">
+                    로그아웃
+                </button>
+            </div>
+
+            <!-- 출근 / 퇴근 입력 박스 -->
+            <div class="p-5 bg-[#171722] rounded-xl border border-[#2b2b3d] text-center space-y-4">
+                <div id="attendanceStatus" class="text-sm font-medium text-zinc-400">
+                    현재 상태: <span class="text-red-400 font-bold">퇴근(미출근)</span> 상태입니다.
+                </div>
+                <div class="grid grid-cols-2 gap-3">
+                    <button onclick="doCheckIn()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-emerald-900/20">
+                        출근하기 🟢
+                    </button>
+                    <button onclick="doCheckOut()" class="py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-rose-900/20">
+                        퇴근하기 🔴
+                    </button>
+                </div>
+                <div id="attendanceTimeLog" class="text-xs text-zinc-500 pt-1">
+                    기록 없음
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+    <!-- 로직 제어 자바스크립트 -->
+    <script>
+        // 초기 데이터 세팅
+        if (!localStorage.getItem('club_codes')) {
+            localStorage.setItem('club_codes', JSON.stringify([
+                { code: 'BOSS1234', role: '사장' },
+                { code: '12345678', role: '공주' }
+            ]));
+        }
+        if (!localStorage.getItem('club_users')) {
+            localStorage.setItem('club_users', JSON.stringify([
+                { email: 'admin@admin.com', pw: 'admin123', name: '최고관리자', role: '관리자' },
+                { email: 'boss@boss.com', pw: 'boss123', name: '대표사장', role: '사장' }
+            ]));
+        }
+        if (!localStorage.getItem('club_attendance')) {
+            localStorage.setItem('club_attendance', JSON.stringify({}));
+        }
+
+        let currentUser = null;
+
+        function switchTab(tab) {
+            const loginTabBtn = document.getElementById('loginTabBtn');
+            const signupTabBtn = document.getElementById('signupTabBtn');
+            const loginForm = document.getElementById('loginForm');
+            const signupForm = document.getElementById('signupForm');
+
+            if (tab === 'login') {
+                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
+                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
+                loginForm.classList.remove('hidden');
+                signupForm.classList.add('hidden');
+            } else {
+                signupTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all bg-[#1e1e2d] text-white border border-[#35354f]";
+                loginTabBtn.className = "px-6 py-2.5 rounded-xl font-medium text-sm transition-all text-zinc-500 hover:text-zinc-300";
+                signupForm.classList.remove('hidden');
+                loginForm.classList.add('hidden');
+            }
+        }
+
+        // 회원가입
+        function handleSignup(e) {
+            e.preventDefault();
+            const code = document.getElementById('signupCode').value.trim();
+            const email = document.getElementById('signupEmail').value.trim();
+            const pw = document.getElementById('signupPw').value.trim();
+            const name = document.getElementById('signupName').value.trim();
+            const phone = document.getElementById('signupPhone').value.trim();
+
+            let codes = JSON.parse(localStorage.getItem('club_codes'));
+            let foundCode = codes.find(c => c.code === code);
+
+            if (!foundCode) {
+                alert('유효하지 않은 가입 코드입니다.');
+                return;
+            }
+
+            let users = JSON.parse(localStorage.getItem('club_users'));
+            if (users.some(u => u.email === email)) {
+                alert('이미 가입된 이메일입니다.');
+                return;
+            }
+
+            users.push({ email, pw, name, role: foundCode.role, phone });
+            localStorage.setItem('club_users', JSON.stringify(users));
+
+            alert(`회원가입 성공! [부여된 직급: ${foundCode.role}]`);
+            switchTab('login');
+            document.getElementById('signupForm').reset();
+        }
+
+        // 로그인
+        function handleLogin(e) {
+            e.preventDefault();
+            const email = document.getElementById('loginEmail').value.trim();
+            const pw = document.getElementById('loginPw').value.trim();
+
+            let users = JSON.parse(localStorage.getItem('club_users'));
+            let user = users.find(u => u.email === email && u.pw === pw);
+
+            if (!user) {
+                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
+                return;
+            }
+
+            currentUser = user;
+            document.getElementById('authWrapper').classList.add('hidden');
+
+            if (user.role === '관리자') {
+                // 관리자 대시보드 (코드 발급 + 현황 조회 가능)
+                document.getElementById('adminDashboard').classList.remove('hidden');
+                renderCodeList();
+                renderAttendanceList('adminAttendanceList');
+            } else if (user.role === '사장') {
+                // 사장 대시보드 (코드 발급 권한 제외, 전체 현황 조회)
+                document.getElementById('bossDashboard').classList.remove('hidden');
+                renderAttendanceList('bossAttendanceList');
+            } else {
+                // 공주 / 경호원 직원 페이지
+                document.getElementById('workerDashboard').classList.remove('hidden');
+                document.getElementById('workerTitle').innerText = `${user.name}님 환영합니다!`;
+                document.getElementById('workerRoleBadge').innerText = `직급: ${user.role}`;
+                updateAttendanceUI();
+            }
+        }
+
+        // 로그아웃
+        function logout() {
+            currentUser = null;
+            document.getElementById('adminDashboard').classList.add('hidden');
+            document.getElementById('bossDashboard').classList.add('hidden');
+            document.getElementById('workerDashboard').classList.add('hidden');
+            document.getElementById('authWrapper').classList.remove('hidden');
+            document.getElementById('loginForm').reset();
+        }
+
+        // [관리자 전용] 가입 코드 생성
+        function createInviteCode() {
+            const role = document.getElementById('codeRole').value;
+            const randomCode = Math.random().toString(36).substring(2, 10).toUpperCase();
+
+            let codes = JSON.parse(localStorage.getItem('club_codes'));
+            codes.push({ code: randomCode, role: role });
+            localStorage.setItem('club_codes', JSON.stringify(codes));
+
+            renderCodeList();
+            alert(`새로운 가입 코드가 발급되었습니다: ${randomCode} (${role})`);
+        }
+
+        // [관리자 전용] 코드 목록 표시
+        function renderCodeList() {
+            let codes = JSON.parse(localStorage.getItem('club_codes'));
+            const codeListEl = document.getElementById('codeList');
+            codeListEl.innerHTML = '';
+
+            if (codes.length === 0) {
+                codeListEl.innerHTML = '<p class="text-xs text-zinc-500 text-center py-2">발급된 코드가 없습니다.</p>';
+                return;
+            }
+
+            codes.forEach((item, index) => {
+                codeListEl.innerHTML += `
+                    <div class="flex justify-between items-center p-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-xs">
+                        <div>
+                            <span class="font-bold text-pink-400 font-mono text-sm">${item.code}</span>
+                            <span class="ml-2 px-2 py-0.5 bg-zinc-800 text-zinc-300 rounded">${item.role}</span>
+                        </div>
+                        <button onclick="deleteCode(${index})" class="text-zinc-500 hover:text-red-400 transition">삭제</button>
+                    </div>
+                `;
+            });
+        }
+
+        function deleteCode(index) {
+            let codes = JSON.parse(localStorage.getItem('club_codes'));
+            codes.splice(index, 1);
+            localStorage.setItem('club_codes', JSON.stringify(codes));
+            renderCodeList();
+        }
+
+        // [공주 / 경호원] 출근하기
+        function doCheckIn() {
+            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
+            const now = new Date().toLocaleString();
+            attendance[currentUser.email] = { status: '출근', time: now, name: currentUser.name, role: currentUser.role };
+            localStorage.setItem('club_attendance', JSON.stringify(attendance));
+            updateAttendanceUI();
+            alert('출근 처리가 완료되었습니다!');
+        }
+
+        // [공주 / 경호원] 퇴근하기
+        function doCheckOut() {
+            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
+            const now = new Date().toLocaleString();
+            attendance[currentUser.email] = { status: '퇴근', time: now, name: currentUser.name, role: currentUser.role };
+            localStorage.setItem('club_attendance', JSON.stringify(attendance));
+            updateAttendanceUI();
+            alert('퇴근 처리가 완료되었습니다!');
+        }
+
+        // 직원 본인 화면 출근 상태 업데이트
+        function updateAttendanceUI() {
+            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
+            let myRecord = attendance[currentUser.email];
+            const statusEl = document.getElementById('attendanceStatus');
+            const timeLogEl = document.getElementById('attendanceTimeLog');
+
+            if (myRecord && myRecord.status === '출근') {
+                statusEl.innerHTML = `현재 상태: <span class="text-emerald-400 font-bold">근무 중 (출근 완료)</span>`;
+                timeLogEl.innerText = `최근 출근 시간: ${myRecord.time}`;
+            } else {
+                statusEl.innerHTML = `현재 상태: <span class="text-rose-400 font-bold">퇴근(미출근)</span>`;
+                timeLogEl.innerText = myRecord ? `최근 퇴근 시간: ${myRecord.time}` : '오늘 기록 없음';
+            }
+        }
+
+        // [관리자 / 사장 공용] 전체 직원 출근 현황 조회 렌더러
+        function renderAttendanceList(elementId) {
+            let attendance = JSON.parse(localStorage.getItem('club_attendance'));
+            let users = JSON.parse(localStorage.getItem('club_users'));
+            const listEl = document.getElementById(elementId);
+            listEl.innerHTML = '';
+
+            // 관리자와 사장을 제외한 직원들만 표시
+            let workers = users.filter(u => u.role !== '관리자' && u.role !== '사장');
+
+            if (workers.length === 0) {
+                listEl.innerHTML = '<p class="text-xs text-zinc-500 text-center py-2">등록된 직원이 없습니다.</p>';
+                return;
+            }
+
+            workers.forEach(w => {
+                let rec = attendance[w.email];
+                let statusBadge = rec && rec.status === '출근' 
+                    ? '<span class="px-2 py-0.5 bg-emerald-500/20 text-emerald-400 rounded">근무중</span>' 
+                    : '<span class="px-2 py-0.5 bg-zinc-800 text-zinc-500 rounded">퇴근/미출근</span>';
+                let timeText = rec ? rec.time : '기록 없음';
+
+                listEl.innerHTML += `
+                    <div class="flex justify-between items-center p-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-xs">
+                        <div>
+                            <span class="font-bold text-white">${w.name}</span>
+                            <span class="ml-1 px-1.5 py-0.5 bg-zinc-800 text-zinc-300 rounded text-[10px]">${w.role}</span>
+                        </div>
+                        <div class="text-right">
+                            ${statusBadge}
+                            <div class="text-[10px] text-zinc-500 mt-0.5">${timeText}</div>
+                        </div>
+                    </div>
+                `;
+            });
+        }
+    </script>
+</body>
+</html>
