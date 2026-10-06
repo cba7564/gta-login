@@ -40,8 +40,9 @@
                     로그인
                 </button>
                 <div class="text-[11px] text-zinc-500 space-y-1 pt-2 border-t border-zinc-800">
-                    <p>🔧 관리자(코드발급): <span class="text-zinc-300 font-mono">admin@admin.com</span> / <span class="text-zinc-300 font-mono">admin123</span></p>
-                    <p>👑 사장(전체조회): <span class="text-zinc-300 font-mono">boss@boss.com</span> / <span class="text-zinc-300 font-mono">boss123</span></p>
+                    <p>🔧 관리자(코드발급권한O): <span class="text-zinc-300 font-mono">admin@admin.com</span> / <span class="text-zinc-300 font-mono">admin123</span></p>
+                    <p>👑 사장(코드발급X, 전체조회): <span class="text-zinc-300 font-mono">boss@boss.com</span> / <span class="text-zinc-300 font-mono">boss123</span></p>
+                    <p>✨ 직원체험(공주): <span class="text-zinc-300 font-mono">princess@club.com</span> / <span class="text-zinc-300 font-mono">1234</span></p>
                 </div>
             </form>
 
@@ -69,14 +70,14 @@
                     가입
                 </button>
                 <p class="text-xs text-zinc-500 text-center pt-2">
-                    기본 테스트 코드 (사장용): <span class="text-pink-400 font-bold">BOSS1234</span> | (공주/경호원용): <span class="text-pink-400 font-bold">12345678</span>
+                    기본 테스트 코드 (공주용): <span class="text-pink-400 font-bold">12345678</span> | (경호원용): <span class="text-pink-400 font-bold">GUARD567</span>
                 </p>
             </form>
         </div>
 
         <!-- 2. 관리자 대시보드 화면 (가입코드 발급 가능) -->
-        <div id="adminDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden">
-            <div class="flex justify-between items-center mb-6">
+        <div id="adminDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden space-y-4">
+            <div class="flex justify-between items-center">
                 <div>
                     <h2 class="text-xl font-bold text-white">관리자 대시보드</h2>
                     <p class="text-xs text-pink-400">코드 발급 및 시스템 관리</p>
@@ -87,11 +88,10 @@
             </div>
 
             <!-- 코드 생성 섹션 -->
-            <div class="mb-6 p-4 bg-[#171722] rounded-xl border border-[#2b2b3d] space-y-3">
+            <div class="p-4 bg-[#171722] rounded-xl border border-[#2b2b3d] space-y-3">
                 <h3 class="text-sm font-semibold text-pink-400">새 가입 코드 발급</h3>
                 <div>
                     <select id="codeRole" class="w-full px-3 py-2.5 bg-[#0b0b10] border border-[#2b2b3d] rounded-lg text-white text-sm focus:outline-none focus:border-pink-500">
-                        <option value="사장">사장</option>
                         <option value="공주">공주</option>
                         <option value="경호원">경호원</option>
                     </select>
@@ -104,17 +104,17 @@
             <!-- 발급된 코드 목록 -->
             <div>
                 <h3 class="text-sm font-semibold text-zinc-300 mb-2">발급된 가입 코드 목록</h3>
-                <div id="codeList" class="space-y-2 max-h-40 overflow-y-auto pr-1 mb-6"></div>
+                <div id="codeList" class="space-y-2 max-h-32 overflow-y-auto pr-1"></div>
             </div>
 
             <!-- 전체 직원 출근 현황 -->
             <div>
                 <h3 class="text-sm font-semibold text-zinc-300 mb-2">전체 직원 출근 현황</h3>
-                <div id="adminAttendanceList" class="space-y-2 max-h-36 overflow-y-auto pr-1"></div>
+                <div id="adminAttendanceList" class="space-y-2 max-h-32 overflow-y-auto pr-1"></div>
             </div>
         </div>
 
-        <!-- 3. 사장 대시보드 화면 (가입코드 발급 권한 없음, 나머지 관리/현황 조회 권한) -->
+        <!-- 3. 사장 대시보드 화면 (가입코드 발급 권한 없음, 현황 조회만) -->
         <div id="bossDashboard" class="bg-[#13131a] border border-[#222230] rounded-2xl p-6 shadow-2xl hidden space-y-6">
             <div class="flex justify-between items-center">
                 <div>
@@ -168,21 +168,31 @@
 
     <!-- 로직 제어 자바스크립트 -->
     <script>
+        // 버전 체크를 통해 예전 꼬인 로컬 데이터 자동 초기화
+        const DB_VERSION = 'club_app_v2_2026';
+        if (localStorage.getItem('club_db_ver') !== DB_VERSION) {
+            localStorage.clear();
+            localStorage.setItem('club_db_ver', DB_VERSION);
+        }
+
         // 초기 데이터 세팅
         if (!localStorage.getItem('club_codes')) {
             localStorage.setItem('club_codes', JSON.stringify([
-                { code: 'BOSS1234', role: '사장' },
-                { code: '12345678', role: '공주' }
+                { code: '12345678', role: '공주' },
+                { code: 'GUARD567', role: '경호원' }
             ]));
         }
         if (!localStorage.getItem('club_users')) {
             localStorage.setItem('club_users', JSON.stringify([
                 { email: 'admin@admin.com', pw: 'admin123', name: '최고관리자', role: '관리자' },
-                { email: 'boss@boss.com', pw: 'boss123', name: '대표사장', role: '사장' }
+                { email: 'boss@boss.com', pw: 'boss123', name: '대표사장', role: '사장' },
+                { email: 'princess@club.com', pw: '1234', name: '예시공주', role: '공주' }
             ]));
         }
         if (!localStorage.getItem('club_attendance')) {
-            localStorage.setItem('club_attendance', JSON.stringify({}));
+            localStorage.setItem('club_attendance', JSON.stringify({
+                'princess@club.com': { status: '출근', time: '오늘 근무 시작', name: '예시공주', role: '공주' }
+            }));
         }
 
         let currentUser = null;
@@ -255,16 +265,13 @@
             document.getElementById('authWrapper').classList.add('hidden');
 
             if (user.role === '관리자') {
-                // 관리자 대시보드 (코드 발급 + 현황 조회 가능)
                 document.getElementById('adminDashboard').classList.remove('hidden');
                 renderCodeList();
                 renderAttendanceList('adminAttendanceList');
             } else if (user.role === '사장') {
-                // 사장 대시보드 (코드 발급 권한 제외, 전체 현황 조회)
                 document.getElementById('bossDashboard').classList.remove('hidden');
                 renderAttendanceList('bossAttendanceList');
             } else {
-                // 공주 / 경호원 직원 페이지
                 document.getElementById('workerDashboard').classList.remove('hidden');
                 document.getElementById('workerTitle').innerText = `${user.name}님 환영합니다!`;
                 document.getElementById('workerRoleBadge').innerText = `직급: ${user.role}`;
@@ -369,7 +376,6 @@
             const listEl = document.getElementById(elementId);
             listEl.innerHTML = '';
 
-            // 관리자와 사장을 제외한 직원들만 표시
             let workers = users.filter(u => u.role !== '관리자' && u.role !== '사장');
 
             if (workers.length === 0) {
