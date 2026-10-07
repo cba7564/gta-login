@@ -6,6 +6,8 @@
     <title>빈집털이 집계 시스템</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Tesseract.js OCR AI CDN -->
+    <script src="https://cdn.jsdelivr.net/npm/tesseract.js@5/dist/tesseract.min.js"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
         body { font-family: 'Pretendard', sans-serif; }
@@ -26,14 +28,14 @@
             <h1 class="text-3xl md:text-5xl font-extrabold text-red-500 tracking-widest red-text-glow">
                 빈집털이 집계
             </h1>
-            <p class="text-xs text-red-300/60 font-medium">장바구니 일괄 정산, 주택 관리 및 실시간 수익 통계 시스템</p>
+            <p class="text-xs text-red-300/60 font-medium">AI 스크린샷 자동 인식, 장바구니 정산 및 수익 통계 시스템</p>
         </div>
 
         <!-- 탭 네비게이션 -->
         <div class="grid grid-cols-2 sm:grid-cols-5 gap-2">
             <button onclick="switchTab('status')" id="tabBtn_status" class="py-3 rounded-xl font-bold text-xs bg-red-600 text-white shadow-lg transition">🏠 주택 현황</button>
             <button onclick="switchTab('items')" id="tabBtn_items" class="py-3 rounded-xl font-bold text-xs bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">📦 물품 단가 관리</button>
-            <button onclick="switchTab('scan')" id="tabBtn_scan" class="py-3 rounded-xl font-bold text-xs bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">🛒 장바구니 물품 정산</button>
+            <button onclick="switchTab('scan')" id="tabBtn_scan" class="py-3 rounded-xl font-bold text-xs bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">📸 AI 스크린샷 정산</button>
             <button onclick="switchTab('alarm')" id="tabBtn_alarm" class="py-3 rounded-xl font-bold text-xs bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">⏰ 15분 알람</button>
             <button onclick="switchTab('stats')" id="tabBtn_stats" class="py-3 rounded-xl font-bold text-xs bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition col-span-2 sm:col-span-1">📊 수익 통계</button>
         </div>
@@ -58,7 +60,7 @@
             </div>
         </div>
 
-        <!-- 탭 2: 물품 단가 관리 및 신규 추가 -->
+        <!-- 탭 2: 물품 단가 관리 -->
         <div id="view_items" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5">
             <div class="border-b border-red-500/20 pb-3">
                 <h2 class="text-base font-bold text-red-400">📦 빈집털이 획득 물품 단가 관리</h2>
@@ -85,495 +87,34 @@
             </div>
         </div>
 
-        <!-- 탭 3: 장바구니 일괄 정산 탭 -->
+        <!-- 탭 3: AI 스크린샷 자동 정산 탭 -->
         <div id="view_scan" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5">
             <div class="border-b border-red-500/20 pb-3">
-                <h2 class="text-base font-bold text-red-400">🛒 장바구니 물품 일괄 정산</h2>
-                <p class="text-xs text-zinc-400 mt-0.5">털이 완료한 주택을 고르고, 얻은 물품들의 수량을 각각 입력한 뒤 한 번에 정산하세요.</p>
+                <h2 class="text-base font-bold text-red-400">📸 AI 스크린샷 자동 인식 및 정산</h2>
+                <p class="text-xs text-zinc-400 mt-0.5">인벤토리 스크린샷을 올리고 <strong>[🤖 AI 자동 분석 시작]</strong>을 누르면 글자를 읽어 수량이 자동 입력됩니다.</p>
             </div>
 
-            <div class="space-y-4">
-                <!-- 장소 선택 -->
-                <div class="bg-[#0c0404] p-4 rounded-xl border border-red-500/20 space-y-2">
-                    <label class="text-xs text-zinc-400 font-bold">털이 완료한 장소 선택</label>
-                    <select id="lootHouseSelect" class="w-full px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500"></select>
-                </div>
-
-                <!-- 물품 리스트 및 수량 입력 칸들 -->
-                <div class="bg-[#0c0404] p-4 rounded-xl border border-red-500/20 space-y-3">
-                    <h3 class="text-xs font-bold text-red-300 uppercase tracking-wider">획득한 물품 수량 입력 (얻은 것만 개수 입력)</h3>
-                    <div id="cartItemsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-3 max-h-60 overflow-y-auto pr-1">
-                        <!-- 동적 생성 -->
-                    </div>
-                </div>
-
-                <button onclick="submitCartCalculation()" class="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-red-900/30">
-                    💰 장바구니 담긴 물품 일괄 정산 및 통계 반영
-                </button>
-            </div>
-        </div>
-
-        <!-- 탭 4: 15분 알람 -->
-        <div id="view_alarm" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5 text-center">
-            <div class="border-b border-red-500/20 pb-3 text-left">
-                <h2 class="text-base font-bold text-red-400">⏰ 빈집털이 완료 후 15분 재진행 알람</h2>
-                <p class="text-xs text-zinc-400">털이가 끝난 직후 버튼을 누르면 15분 뒤 알람 타이머가 작동합니다.</p>
-            </div>
-
-            <div class="py-8 space-y-4 max-w-sm mx-auto bg-[#0c0404] p-6 rounded-2xl border border-red-500/20">
-                <div id="alarmDisplay" class="text-4xl font-extrabold text-red-500 font-mono tracking-widest red-text-glow">00:00</div>
-                <p id="alarmStatusText" class="text-xs text-zinc-400">현재 대기 중인 알람이 없습니다.</p>
-                <div class="grid grid-cols-2 gap-3 pt-2">
-                    <button onclick="startFifteenMinAlarm()" class="py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition">🚨 15분 타이머 시작</button>
-                    <button onclick="resetAlarm()" class="py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs transition">초기화</button>
-                </div>
-            </div>
-        </div>
-
-        <!-- 탭 5: 수익 통계표 -->
-        <div id="view_stats" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-6">
-            <div class="border-b border-red-500/20 pb-3 flex justify-between items-center">
-                <h2 class="text-base font-bold text-red-400">📊 수익 및 획득 물품 통계표</h2>
-                <button onclick="clearStats()" class="px-3 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs hover:bg-red-500 hover:text-white transition">통계 초기화</button>
-            </div>
-
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
-                <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
-                    <p class="text-xs text-zinc-400">📅 오늘 하루 총수익</p>
-                    <p id="statTodayEarnings" class="text-xl font-extrabold text-emerald-400">0원</p>
-                </div>
-                <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
-                    <p class="text-xs text-zinc-400">🗓️ 이번 달 총수익</p>
-                    <p id="statMonthEarnings" class="text-xl font-extrabold text-red-400">0원</p>
-                </div>
-                <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
-                    <p class="text-xs text-zinc-400">📦 오늘 획득 물품 총갯수</p>
-                    <p id="statTodayItemCount" class="text-xl font-extrabold text-amber-400">0개</p>
-                </div>
-            </div>
-
-            <div class="space-y-2">
-                <h3 class="text-xs font-bold text-zinc-300">최근 정산 내역</h3>
-                <div class="overflow-x-auto">
-                    <table class="w-full text-left text-xs">
-                        <thead>
-                            <tr class="border-b border-red-500/25 text-red-300">
-                                <th class="py-2.5 px-2">시각</th>
-                                <th class="py-2.5 px-2">장소</th>
-                                <th class="py-2.5 px-2">상세 내역</th>
-                                <th class="py-2.5 px-2 text-right">수익금</th>
-                            </tr>
-                        </thead>
-                        <tbody id="statsTableBody" class="divide-y divide-red-500/10"></tbody>
-                    </table>
-                </div>
-            </div>
-        </div>
-
-    </div>
-
-    <!-- 스크립트 로직 -->
-    <script>
-        const defaultItems = [
-            { id: 'i1', name: '코카인 봉지', price: 35000 },
-            { id: 'i2', name: '암호화폐 스틱', price: 28000 },
-            { id: 'i3', name: '다이아몬드', price: 70000 },
-            { id: 'i4', name: '전자 키트', price: 21000 },
-            { id: 'i5', name: '금목걸이', price: 42000 },
-            { id: 'i6', name: '메스암페타민', price: 28000 },
-            { id: 'i7', name: '플라스틱', price: 7000 },
-            { id: 'i8', name: '금시계', price: 140000 },
-            { id: 'i9', name: '샌드위치', price: 2100 },
-            { id: 'i10', name: '스마트워치', price: 28000 },
-            { id: 'i11', name: '태블릿', price: 35000 },
-            { id: 'i12', name: '토스트', price: 1400 },
-            { id: 'i13', name: '스컹크2g', price: 14000 },
-            { id: 'i14', name: '위스키', price: 14000 }
-        ];
-
-        const defaultHouses = [
-            { id: 'p1', name: '팔레토 베이 주택 1', fixedIncome: 50000, status: 'idle', worker: '', cooldownEnd: 0 },
-            { id: 'p2', name: '팔레토 베이 주택 2', fixedIncome: 45000, status: 'idle', worker: '', cooldownEnd: 0 }
-        ];
-
-        function getItems() {
-            let data = localStorage.getItem('rob_items_v4');
-            return data ? JSON.parse(data) : defaultItems;
-        }
-        function saveItems(items) {
-            localStorage.setItem('rob_items_v4', JSON.stringify(items));
-        }
-
-        function getHouses() {
-            let data = localStorage.getItem('rob_houses_v4');
-            return data ? JSON.parse(data) : defaultHouses;
-        }
-        function saveHouses(houses) {
-            localStorage.setItem('rob_houses_v4', JSON.stringify(houses));
-        }
-
-        function getLogs() {
-            let data = localStorage.getItem('rob_logs_v4');
-            return data ? JSON.parse(data) : [];
-        }
-        function saveLogs(logs) {
-            localStorage.setItem('rob_logs_v4', JSON.stringify(logs));
-        }
-
-        function switchTab(tabName) {
-            ['status', 'items', 'scan', 'alarm', 'stats'].forEach(t => {
-                document.getElementById(`view_${t}`).classList.add('hidden');
-                document.getElementById(`tabBtn_${t}`).className = "py-3 rounded-xl font-bold text-xs bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition";
-            });
-            document.getElementById(`view_${tabName}`).classList.remove('hidden');
-            document.getElementById(`tabBtn_${tabName}`).className = "py-3 rounded-xl font-bold text-xs bg-red-600 text-white shadow-lg transition";
-
-            if (tabName === 'status') renderHouseList();
-            if (tabName === 'items') renderItemsTable();
-            if (tabName === 'scan') updateCartScanUI();
-            if (tabName === 'stats') renderStats();
-        }
-
-        // 물품 추가 기능
-        function addNewItem() {
-            let name = document.getElementById('newItemName').value.trim();
-            let price = parseInt(document.getElementById('newItemPrice').value) || 0;
-
-            if (!name) {
-                alert('물품 이름을 입력해주세요.');
-                return;
-            }
-
-            let items = getItems();
-            items.push({ id: 'it_' + new Date().getTime(), name: name, price: price });
-            saveItems(items);
-
-            document.getElementById('newItemName').value = '';
-            document.getElementById('newItemPrice').value = '';
-            renderItemsTable();
-            alert(`[${name}] 물품이 단가표에 등록되었습니다.`);
-        }
-
-        function deleteItem(index) {
-            if (confirm('이 물품을 삭제하시겠습니까?')) {
-                let items = getItems();
-                items.splice(index, 1);
-                saveItems(items);
-                renderItemsTable();
-            }
-        }
-
-        function renderItemsTable() {
-            let items = getItems();
-            let tbody = document.getElementById('itemsTableBody');
-            tbody.innerHTML = '';
-
-            items.forEach((item, index) => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-red-500/5 transition">
-                        <td class="py-2.5 px-2 font-bold text-white">${item.name}</td>
-                        <td class="py-2.5 px-2 text-emerald-400">${item.price.toLocaleString()}원</td>
-                        <td class="py-2.5 px-2 text-right">
-                            <button onclick="deleteItem(${index})" class="text-zinc-500 hover:text-red-400 text-xs">삭제</button>
-                        </td>
-                    </tr>
-                `;
-            });
-        }
-
-        // 주택 관리
-        function addNewHouse() {
-            let name = document.getElementById('newHouseName').value.trim();
-            let income = parseInt(document.getElementById('newHouseIncome').value) || 0;
-
-            if (!name) {
-                alert('주택 이름을 입력해주세요.');
-                return;
-            }
-
-            let houses = getHouses();
-            houses.push({ id: 'h_' + new Date().getTime(), name: name, fixedIncome: income, status: 'idle', worker: '', cooldownEnd: 0 });
-            saveHouses(houses);
-
-            document.getElementById('newHouseName').value = '';
-            document.getElementById('newHouseIncome').value = '';
-            renderHouseList();
-            alert(`[${name}] 주택이 등록되었습니다!`);
-        }
-
-        function deleteHouse(index) {
-            if (confirm('이 주택을 삭제하시겠습니까?')) {
-                let houses = getHouses();
-                houses.splice(index, 1);
-                saveHouses(houses);
-                renderHouseList();
-            }
-        }
-
-        function renderHouseList() {
-            let houses = getHouses();
-            let container = document.getElementById('houseListContainer');
-            container.innerHTML = '';
-            let now = new Date().getTime();
-
-            houses.forEach((h, index) => {
-                if (h.status === 'cooldown' && now >= h.cooldownEnd) {
-                    h.status = 'idle';
-                    h.worker = '';
-                }
-
-                let statusBadge = '';
-                let actionBtn = '';
-
-                if (h.status === 'idle') {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-300">🟢 비어있음</span>`;
-                    actionBtn = `<button onclick="startRob(${index})" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg text-xs transition">내가 털기 시작</button>`;
-                } else if (h.status === 'doing') {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">🟡 진행중 (${h.worker})</span>`;
-                    actionBtn = `<button onclick="finishRob(${index})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition">털이 완료 (고정수입)</button>`;
-                } else if (h.status === 'cooldown') {
-                    let remainSec = Math.ceil((h.cooldownEnd - now) / 1000);
-                    let min = Math.floor(remainSec / 60);
-                    let sec = remainSec % 60;
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">⏳ 쿨타임 (${min}분 ${sec}초)</span>`;
-                    actionBtn = `<button onclick="resetHouse(${index})" class="px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white font-bold rounded-lg text-xs transition">강제 초기화</button>`;
-                }
-
-                container.innerHTML += `
-                    <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 space-y-3 flex flex-col justify-between">
-                        <div class="flex justify-between items-start">
-                            <div>
-                                <h3 class="font-bold text-white text-sm">${h.name}</h3>
-                                <p class="text-[11px] text-emerald-400 font-semibold mt-0.5">고정 수입: ${h.fixedIncome.toLocaleString()}원</p>
-                            </div>
-                            <div class="flex items-center gap-2">
-                                ${statusBadge}
-                                <button onclick="deleteHouse(${index})" class="text-zinc-600 hover:text-red-400 text-xs">✕</button>
-                            </div>
-                        </div>
-                        <div class="flex justify-between items-center pt-2 border-t border-red-500/10">
-                            <span class="text-xs text-zinc-400">현장 상태</span>
-                            <div>${actionBtn}</div>
-                        </div>
-                    </div>
-                `;
-            });
-            saveHouses(houses);
-        }
-
-        function startRob(index) {
-            let workerName = prompt('현재 털고 있는 본인의 닉네임을 입력하세요:', '플레이어');
-            if (!workerName) return;
-
-            let houses = getHouses();
-            houses[index].status = 'doing';
-            houses[index].worker = workerName;
-            saveHouses(houses);
-            renderHouseList();
-        }
-
-        function finishRob(index) {
-            let houses = getHouses();
-            let h = houses[index];
-            
-            let logs = getLogs();
-            let now = new Date();
-            logs.unshift({
-                timeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                dateStr: now.toLocaleDateString(),
-                fullDate: now.toISOString(),
-                house: h.name,
-                cash: h.fixedIncome,
-                totalCount: 0,
-                items: '주택 고정 수입'
-            });
-            saveLogs(logs);
-
-            h.status = 'cooldown';
-            h.worker = '';
-            h.cooldownEnd = now.getTime() + (5 * 60 * 1000);
-            saveHouses(houses);
-
-            renderHouseList();
-            alert(`[${h.name}] 털이 완료! 고정 수입 ${h.fixedIncome.toLocaleString()}원이 통계에 반영되었습니다.`);
-        }
-
-        function resetHouse(index) {
-            let houses = getHouses();
-            houses[index].status = 'idle';
-            houses[index].worker = '';
-            houses[index].cooldownEnd = 0;
-            saveHouses(houses);
-            renderHouseList();
-        }
-
-        setInterval(() => {
-            if (!document.getElementById('view_status').classList.contains('hidden')) {
-                renderHouseList();
-            }
-        }, 1000);
-
-        // 장바구니 정산 UI 갱신 (모든 물품에 각각 수량 입력창 제공)
-        function updateCartScanUI() {
-            let houses = getHouses();
-            let houseSelect = document.getElementById('lootHouseSelect');
-            houseSelect.innerHTML = '';
-            houses.forEach(h => {
-                houseSelect.innerHTML += `<option value="${h.name}">${h.name}</option>`;
-            });
-
-            let items = getItems();
-            let container = document.getElementById('cartItemsContainer');
-            container.innerHTML = '';
-
-            items.forEach((it, idx) => {
-                container.innerHTML += `
-                    <div class="flex items-center justify-between bg-[#160808] p-2.5 rounded-xl border border-red-500/20">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 스크린샷 업로드 및 AI 분석 버튼 -->
+                <div class="space-y-4">
+                    <div class="border-2 border-dashed border-red-500/30 rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-3 bg-[#0c0404] hover:border-red-500 transition cursor-pointer" onclick="document.getElementById('screenshotInput').click()">
+                        <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 text-xl">📁</div>
                         <div>
-                            <span class="font-bold text-white text-xs">${it.name}</span>
-                            <span class="block text-[10px] text-emerald-400">${it.price.toLocaleString()}원</span>
+                            <p class="text-sm font-bold text-zinc-200">인벤토리 스크린샷 업로드</p>
+                            <p class="text-xs text-zinc-500 mt-1">클릭하여 캡처 파일을 선택하세요</p>
                         </div>
-                        <div class="flex items-center gap-1.5">
-                            <input type="number" id="cart_qty_${idx}" value="0" min="0" data-price="${it.price}" data-name="${it.name}" class="cart-qty-input w-16 px-2 py-1 bg-[#0c0404] border border-red-500/30 rounded-lg text-white text-xs text-center focus:outline-none focus:border-red-500">
-                            <span class="text-[10px] text-zinc-400">개</span>
+                        <input type="file" id="screenshotInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                        <div id="previewContainer" class="w-full hidden pt-2">
+                            <img id="imagePreview" class="max-h-40 mx-auto rounded-lg border border-red-500/30 object-contain">
                         </div>
                     </div>
-                `;
-            });
-        }
+                    <button onclick="runAiOcrAnalysis()" class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-purple-900/30 flex items-center justify-center gap-2">
+                        🤖 AI로 스크린샷 물품 자동 인식하기
+                    </button>
+                    <div id="aiStatusText" class="text-center text-xs text-zinc-400">대기 중...</div>
+                </div>
 
-        // 장바구니 일괄 정산 실행
-        function submitCartCalculation() {
-            let house = document.getElementById('lootHouseSelect').value;
-            let qtyInputs = document.querySelectorAll('.cart-qty-input');
-            
-            let totalCash = 0;
-            let totalItemCount = 0;
-            let summaryList = [];
-
-            qtyInputs.forEach(input => {
-                let qty = parseInt(input.value) || 0;
-                if (qty > 0) {
-                    let price = parseInt(input.getAttribute('data-price')) || 0;
-                    let name = input.getAttribute('data-name');
-                    let subTotal = price * qty;
-
-                    totalCash += subTotal;
-                    totalItemCount += qty;
-                    summaryList.push(`${name} ${qty}개`);
-                }
-            });
-
-            if (totalItemCount === 0) {
-                alert('정산할 물품의 수량을 하나 이상 입력해주세요.');
-                return;
-            }
-
-            let itemString = summaryList.join(', ');
-
-            let logs = getLogs();
-            let now = new Date();
-            
-            logs.unshift({
-                timeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                dateStr: now.toLocaleDateString(),
-                fullDate: now.toISOString(),
-                house: house,
-                cash: totalCash,
-                totalCount: totalItemCount,
-                items: itemString
-            });
-
-            saveLogs(logs);
-            alert(`장바구니 일괄 정산 완료!\n총 획득 물품: ${totalItemCount}개\n총 수익금: ${totalCash.toLocaleString()}원\n통계에 반영되었습니다.`);
-            switchTab('stats');
-        }
-
-        // 15분 알람
-        let alarmInterval = null;
-        let targetAlarmTime = 0;
-
-        function startFifteenMinAlarm() {
-            targetAlarmTime = new Date().getTime() + (15 * 60 * 1000);
-            document.getElementById('alarmStatusText').innerText = '🚨 다음 빈집털이까지 대기 중...';
-            
-            if (alarmInterval) clearInterval(alarmInterval);
-
-            alarmInterval = setInterval(() => {
-                let now = new Date().getTime();
-                let remain = targetAlarmTime - now;
-
-                if (remain <= 0) {
-                    clearInterval(alarmInterval);
-                    document.getElementById('alarmDisplay').innerText = '00:00';
-                    document.getElementById('alarmStatusText').innerText = '🎉 15분이 경과했습니다! 다시 출동하세요!';
-                    alert('⏰ 15분 대기 시간이 종료되었습니다!');
-                    return;
-                }
-
-                let min = Math.floor(remain / (1000 * 60));
-                let sec = Math.floor((remain % (1000 * 60)) / 1000);
-                document.getElementById('alarmDisplay').innerText = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
-            }, 1000);
-        }
-
-        function resetAlarm() {
-            if (alarmInterval) clearInterval(alarmInterval);
-            document.getElementById('alarmDisplay').innerText = '00:00';
-            document.getElementById('alarmStatusText').innerText = '현재 대기 중인 알람이 없습니다.';
-        }
-
-        // 통계표 렌더링
-        function renderStats() {
-            let logs = getLogs();
-            let todayStr = new Date().toLocaleDateString();
-            let currentMonthStr = new Date().toISOString().slice(0, 7);
-
-            let todayEarnings = 0;
-            let monthEarnings = 0;
-            let todayItemCount = 0;
-
-            logs.forEach(log => {
-                let logMonth = log.fullDate ? log.fullDate.slice(0, 7) : '';
-                if (log.dateStr === todayStr) {
-                    todayEarnings += log.cash;
-                    todayItemCount += (log.totalCount || 0);
-                }
-                if (logMonth === currentMonthStr) {
-                    monthEarnings += log.cash;
-                }
-            });
-
-            document.getElementById('statTodayEarnings').innerText = `${todayEarnings.toLocaleString()}원`;
-            document.getElementById('statMonthEarnings').innerText = `${monthEarnings.toLocaleString()}원`;
-            document.getElementById('statTodayItemCount').innerText = `${todayItemCount}개`;
-
-            let tbody = document.getElementById('statsTableBody');
-            tbody.innerHTML = '';
-
-            if (logs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-zinc-500">아직 정산된 기록이 없습니다.</td></tr>`;
-                return;
-            }
-
-            logs.forEach(log => {
-                tbody.innerHTML += `
-                    <tr class="hover:bg-red-500/5 transition">
-                        <td class="py-2.5 px-2 text-zinc-400">${log.dateStr} ${log.timeStr}</td>
-                        <td class="py-2.5 px-2 font-bold text-white">${log.house}</td>
-                        <td class="py-2.5 px-2 text-zinc-300">${log.items}</td>
-                        <td class="py-2.5 px-2 text-right font-bold text-emerald-400">+${log.cash.toLocaleString()}원</td>
-                    </tr>
-                `;
-            });
-        }
-
-        function clearStats() {
-            if (confirm('모든 통계 기록을 초기화하시겠습니까?')) {
-                localStorage.removeItem('rob_logs_v4');
-                renderStats();
-            }
-        }
-    </script>
-</body>
-</html>
+                <!-- 정산 입력 폼 및 장바구니 -->
+                <div class="space-y-4 bg-[#0c0404] p-5 rounded-2xl border border-red-500/20">
+                    <div class="space-y-1">
+                        <label class="text-xs text-zinc
