@@ -21,28 +21,40 @@
     
     <div class="w-full max-w-4xl mx-auto space-y-6">
         
-        <!-- 1번 요구사항: 메인 가운데 붉은 글씨 제목 -->
+        <!-- 타이틀 -->
         <div class="text-center space-y-2 py-6 border-b border-red-500/20">
             <h1 class="text-3xl md:text-5xl font-extrabold text-red-500 tracking-widest red-text-glow">
                 빈집털이 집계
             </h1>
-            <p class="text-xs text-red-300/60 font-medium">실시간 주택 현황, 스크린샷 정산 및 수익 통계 시스템</p>
+            <p class="text-xs text-red-300/60 font-medium">주택 관리, 고정 수입 설정, 실시간 쿨타임 및 수익 통계</p>
         </div>
 
         <!-- 탭 네비게이션 -->
         <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
-            <button onclick="switchTab('status')" id="tabBtn_status" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-red-600 text-white shadow-lg shadow-red-900/40 transition">🏠 주택 현황 & 쿨타임</button>
+            <button onclick="switchTab('status')" id="tabBtn_status" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-red-600 text-white shadow-lg shadow-red-900/40 transition">🏠 주택 현황 & 추가</button>
             <button onclick="switchTab('scan')" id="tabBtn_scan" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">📸 스크린샷 물품 집계</button>
             <button onclick="switchTab('alarm')" id="tabBtn_alarm" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">⏰ 15분 털이 알람</button>
             <button onclick="switchTab('stats')" id="tabBtn_stats" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">📊 수익 & 아이템 통계</button>
         </div>
 
-        <!-- 2번 요구사항 탭: 주택 현황 및 온/오프, 5분 쿨타임 -->
-        <div id="view_status" class="space-y-4">
+        <!-- 탭 1: 주택 현황, 추가, 온/오프, 쿨타임, 고정수입 -->
+        <div id="view_status" class="space-y-6">
+            
+            <!-- 새 주택 추가 박스 -->
+            <div class="bg-[#120707] border border-red-500/30 rounded-2xl p-5 red-glow space-y-4">
+                <h2 class="text-sm font-bold text-red-400">➕ 새로운 주택 및 고정 수입 등록</h2>
+                <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+                    <input type="text" id="newHouseName" placeholder="주택 이름 (예: 바인우드 주택 3)" class="px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500">
+                    <input type="number" id="newHouseIncome" placeholder="고정 수입 금액 ($)" class="px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500">
+                    <button onclick="addNewHouse()" class="py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-md">주택 추가하기</button>
+                </div>
+            </div>
+
+            <!-- 주택 목록 카드 -->
             <div class="bg-[#120707] border border-red-500/30 rounded-2xl p-5 red-glow space-y-4">
                 <div class="flex justify-between items-center border-b border-red-500/20 pb-3">
-                    <h2 class="text-base font-bold text-red-400">🏠 주택별 침입 현황 및 5분 쿨타임</h2>
-                    <span class="text-xs text-zinc-400">상태를 변경하여 팀원들과 공유하세요</span>
+                    <h2 class="text-base font-bold text-red-400">🏠 등록된 주택 현황 및 실시간 쿨타임</h2>
+                    <span class="text-xs text-zinc-400">진행 상태 및 잔여 쿨타임 표시</span>
                 </div>
                 
                 <div id="houseListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
@@ -51,20 +63,19 @@
             </div>
         </div>
 
-        <!-- 3번 요구사항 탭: 스크린샷 기반 물품 자동 집계 및 수익 계산 -->
+        <!-- 탭 2: 스크린샷 물품 집계 -->
         <div id="view_scan" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow space-y-5 hidden">
             <div class="border-b border-red-500/20 pb-3">
                 <h2 class="text-base font-bold text-red-400">📸 털이 완료물품 스크린샷 정산</h2>
-                <p class="text-xs text-zinc-400 mt-0.5">인벤토리 스크린샷을 올리면 AI가 자동 인식하거나 수동으로 품목을 입력해 정산합니다.</p>
+                <p class="text-xs text-zinc-400 mt-0.5">추가로 획득한 인벤토리 물품 및 현금을 정산합니다.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <!-- 업로드 박스 -->
                 <div class="border-2 border-dashed border-red-500/30 rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-3 bg-[#0c0404] hover:border-red-500 transition cursor-pointer" onclick="document.getElementById('screenshotInput').click()">
                     <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 text-xl">📁</div>
                     <div>
                         <p class="text-sm font-bold text-zinc-200">스크린샷 이미지 업로드</p>
-                        <p class="text-xs text-zinc-500 mt-1">클릭하여 인벤토리 캡처 파일을 선택하세요</p>
+                        <p class="text-xs text-zinc-500 mt-1">클릭하여 캡처 파일을 선택하세요</p>
                     </div>
                     <input type="file" id="screenshotInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
                     <div id="previewContainer" class="w-full hidden pt-2">
@@ -72,44 +83,40 @@
                     </div>
                 </div>
 
-                <!-- 집계 폼 및 결과 입력 -->
                 <div class="space-y-4 bg-[#0c0404] p-5 rounded-2xl border border-red-500/20">
-                    <h3 class="text-xs font-bold text-red-300 uppercase tracking-wider">획득 품목 수동/자동 확인</h3>
+                    <h3 class="text-xs font-bold text-red-300 uppercase tracking-wider">추가 획득 물품 정산</h3>
                     
                     <div class="space-y-2">
                         <label class="text-xs text-zinc-400">장소 선택</label>
                         <select id="lootHouseSelect" class="w-full px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500">
-                            <option value="팔레토 베이 주택 1">팔레토 베이 주택 1</option>
-                            <option value="팔레토 베이 주택 2">팔레토 베이 주택 2</option>
-                            <option value="샌디 쇼어스 주택 1">샌디 쇼어스 주택 1</option>
-                            <option value="미션 로우 주택 1">미션 로우 주택 1</option>
+                            <!-- 동적 로드 -->
                         </select>
                     </div>
 
                     <div class="grid grid-cols-2 gap-2">
                         <div>
-                            <label class="text-xs text-zinc-400">현금 ($)</label>
-                            <input type="number" id="lootCash" value="15000" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
+                            <label class="text-xs text-zinc-400">추가 현금 ($)</label>
+                            <input type="number" id="lootCash" value="10000" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
                         </div>
                         <div>
-                            <label class="text-xs text-zinc-400">귀금속/시계 (개)</label>
-                            <input type="number" id="lootItemsCount" value="4" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
+                            <label class="text-xs text-zinc-400">아이템 갯수 (개)</label>
+                            <input type="number" id="lootItemsCount" value="3" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
                         </div>
                     </div>
 
                     <div>
-                        <label class="text-xs text-zinc-400">주요 획득 물품명</label>
-                        <input type="text" id="lootItemNames" value="고급 손목시계, 금괴, 다이아몬드 목걸이" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
+                        <label class="text-xs text-zinc-400">획득 물품명</label>
+                        <input type="text" id="lootItemNames" value="다이아몬드 반지, 고급 시계" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
                     </div>
 
                     <button onclick="submitLootResult()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-red-900/30">
-                        💰 수익 정산 및 통계 반영하기
+                        💰 추가 물품 수익 반영하기
                     </button>
                 </div>
             </div>
         </div>
 
-        <!-- 4번 요구사항 탭: 15분 재진행 알람 기능 -->
+        <!-- 탭 3: 15분 알람 -->
         <div id="view_alarm" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5 text-center">
             <div class="border-b border-red-500/20 pb-3 text-left">
                 <h2 class="text-base font-bold text-red-400">⏰ 빈집털이 완료 후 15분 재진행 알람</h2>
@@ -132,30 +139,28 @@
             </div>
         </div>
 
-        <!-- 5번 요구사항 탭: 오늘 하루 수익, 월수익, 얻은 물품 총 갯수 통계표 -->
+        <!-- 탭 4: 수익 및 아이템 통계표 -->
         <div id="view_stats" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-6">
             <div class="border-b border-red-500/20 pb-3 flex justify-between items-center">
-                <h2 class="text-base font-bold text-red-400">📊 수익 및 획득 물품 통계표</h2>
+                <h2 class="text-base font-bold text-red-400">📊 수익 및 획득 물품 통계표 (고정 수입 포함)</h2>
                 <button onclick="clearStats()" class="px-3 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs hover:bg-red-500 hover:text-white transition">통계 초기화</button>
             </div>
 
-            <!-- 요약 카드 -->
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
                 <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
-                    <p class="text-xs text-zinc-400">📅 오늘 하루 수익</p>
+                    <p class="text-xs text-zinc-400">📅 오늘 하루 총수익</p>
                     <p id="statTodayEarnings" class="text-xl font-extrabold text-emerald-400">$0</p>
                 </div>
                 <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
-                    <p class="text-xs text-zinc-400">🗓️ 이번 달 총 수익</p>
+                    <p class="text-xs text-zinc-400">🗓️ 이번 달 총수익</p>
                     <p id="statMonthEarnings" class="text-xl font-extrabold text-red-400">$0</p>
                 </div>
                 <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
-                    <p class="text-xs text-zinc-400">📦 오늘 획득 물품 총 갯수</p>
+                    <p class="text-xs text-zinc-400">📦 오늘 획득 물품 총갯수</p>
                     <p id="statTodayItemCount" class="text-xl font-extrabold text-amber-400">0개</p>
                 </div>
             </div>
 
-            <!-- 상세 정산 기록 테이블 -->
             <div class="space-y-2">
                 <h3 class="text-xs font-bold text-zinc-300">최근 빈집털이 정산 내역</h3>
                 <div class="overflow-x-auto">
@@ -164,8 +169,8 @@
                             <tr class="border-b border-red-500/25 text-red-300">
                                 <th class="py-2.5 px-2">시각</th>
                                 <th class="py-2.5 px-2">장소</th>
-                                <th class="py-2.5 px-2">획득 물품</th>
-                                <th class="py-2.5 px-2 text-right">수익금</th>
+                                <th class="py-2.5 px-2">상세 내역</th>
+                                <th class="py-2.5 px-2 text-right">총 수익금</th>
                             </tr>
                         </thead>
                         <tbody id="statsTableBody" class="divide-y divide-red-500/10">
@@ -180,31 +185,27 @@
 
     <!-- 스크립트 로직 -->
     <script>
-        // 초기 주택 데이터 설정
         const defaultHouses = [
-            { id: 'p1', name: '팔레토 베이 주택 1', status: 'idle', worker: '', cooldownEnd: 0 },
-            { id: 'p2', name: '팔레토 베이 주택 2', status: 'idle', worker: '', cooldownEnd: 0 },
-            { id: 's1', name: '샌디 쇼어스 주택 1', status: 'idle', worker: '', cooldownEnd: 0 },
-            { id: 'm1', name: '미션 로우 주택 1', status: 'idle', worker: '', cooldownEnd: 0 }
+            { id: 'p1', name: '팔레토 베이 주택 1', fixedIncome: 30000, status: 'idle', worker: '', cooldownEnd: 0 },
+            { id: 'p2', name: '팔레토 베이 주택 2', fixedIncome: 25000, status: 'idle', worker: '', cooldownEnd: 0 }
         ];
 
         function getHouses() {
-            let data = localStorage.getItem('rob_houses');
+            let data = localStorage.getItem('rob_houses_v2');
             return data ? JSON.parse(data) : defaultHouses;
         }
         function saveHouses(houses) {
-            localStorage.setItem('rob_houses', JSON.stringify(houses));
+            localStorage.setItem('rob_houses_v2', JSON.stringify(houses));
         }
 
         function getLogs() {
-            let data = localStorage.getItem('rob_logs');
+            let data = localStorage.getItem('rob_logs_v2');
             return data ? JSON.parse(data) : [];
         }
         function saveLogs(logs) {
-            localStorage.setItem('rob_logs', JSON.stringify(logs));
+            localStorage.setItem('rob_logs_v2', JSON.stringify(logs));
         }
 
-        // 탭 전환 기능
         function switchTab(tabName) {
             ['status', 'scan', 'alarm', 'stats'].forEach(t => {
                 document.getElementById(`view_${t}`).classList.add('hidden');
@@ -214,10 +215,48 @@
             document.getElementById(`tabBtn_${tabName}`).className = "py-3 rounded-xl font-bold text-xs md:text-sm bg-red-600 text-white shadow-lg shadow-red-900/40 transition";
 
             if (tabName === 'status') renderHouseList();
+            if (tabName === 'scan') updateLootSelect();
             if (tabName === 'stats') renderStats();
         }
 
-        // 1번 기능: 주택 현황 및 5분 쿨타임 렌더링
+        // 주택 추가 기능
+        function addNewHouse() {
+            let name = document.getElementById('newHouseName').value.trim();
+            let income = parseInt(document.getElementById('newHouseIncome').value) || 0;
+
+            if (!name) {
+                alert('주택 이름을 입력해주세요.');
+                return;
+            }
+
+            let houses = getHouses();
+            houses.push({
+                id: 'h_' + new Date().getTime(),
+                name: name,
+                fixedIncome: income,
+                status: 'idle',
+                worker: '',
+                cooldownEnd: 0
+            });
+
+            saveHouses(houses);
+            document.getElementById('newHouseName').value = '';
+            document.getElementById('newHouseIncome').value = '';
+            renderHouseList();
+            alert(`[${name}] 주택이 등록되었습니다!`);
+        }
+
+        // 주택 삭제 기능
+        function deleteHouse(index) {
+            if (confirm('이 주택을 목록에서 삭제하시겠습니까?')) {
+                let houses = getHouses();
+                houses.splice(index, 1);
+                saveHouses(houses);
+                renderHouseList();
+            }
+        }
+
+        // 주택 현황 렌더링 및 잔여 쿨타임 표시
         function renderHouseList() {
             let houses = getHouses();
             let container = document.getElementById('houseListContainer');
@@ -225,7 +264,6 @@
             let now = new Date().getTime();
 
             houses.forEach((h, index) => {
-                // 쿨타임 체크 (5분 = 300,000ms)
                 if (h.status === 'cooldown' && now >= h.cooldownEnd) {
                     h.status = 'idle';
                     h.worker = '';
@@ -235,17 +273,17 @@
                 let actionBtn = '';
 
                 if (h.status === 'idle') {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-300">🟢 대기 중 (비어있음)</span>`;
-                    actionBtn = `<button onclick="setHouseStatus(${index}, 'doing')" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg text-xs transition">내가 털기 시작</button>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-300">🟢 비어있음</span>`;
+                    actionBtn = `<button onclick="startRob(${index})" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg text-xs transition">내가 털기 시작</button>`;
                 } else if (h.status === 'doing') {
-                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">🟡 진행 중 (${h.worker || '다른 사람'})</span>`;
-                    actionBtn = `<button onclick="finishHouse(${index})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition">털이 완료 (5분 쿨타임)</button>`;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">🟡 진행중 (${h.worker})</span>`;
+                    actionBtn = `<button onclick="finishRob(${index})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition">털이 완료 (고정수입 획득)</button>`;
                 } else if (h.status === 'cooldown') {
                     let remainSec = Math.ceil((h.cooldownEnd - now) / 1000);
                     let min = Math.floor(remainSec / 60);
                     let sec = remainSec % 60;
                     statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">⏳ 쿨타임 (${min}분 ${sec}초)</span>`;
-                    actionBtn = `<button onclick="setHouseStatus(${index}, 'idle')" class="px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white font-bold rounded-lg text-xs transition">강제 초기화</button>`;
+                    actionBtn = `<button onclick="resetHouse(${index})" class="px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white font-bold rounded-lg text-xs transition">강제 초기화</button>`;
                 }
 
                 container.innerHTML += `
@@ -253,9 +291,12 @@
                         <div class="flex justify-between items-start">
                             <div>
                                 <h3 class="font-bold text-white text-sm">${h.name}</h3>
-                                <p class="text-[10px] text-zinc-500 mt-0.5">보안 등급: 일반 주택</p>
+                                <p class="text-[11px] text-emerald-400 font-semibold mt-0.5">고정 수입: $${h.fixedIncome.toLocaleString()}</p>
                             </div>
-                            <div>${statusBadge}</div>
+                            <div class="flex items-center gap-2">
+                                ${statusBadge}
+                                <button onclick="deleteHouse(${index})" class="text-zinc-600 hover:text-red-400 text-xs">✕</button>
+                            </div>
                         </div>
                         <div class="flex justify-between items-center pt-2 border-t border-red-500/10">
                             <span class="text-xs text-zinc-400">현장 상태</span>
@@ -267,32 +308,70 @@
             saveHouses(houses);
         }
 
-        function setHouseStatus(index, status) {
+        function startRob(index) {
+            let workerName = prompt('현재 털고 있는 본인의 닉네임을 입력하세요:', '플레이어');
+            if (!workerName) return;
+
             let houses = getHouses();
-            houses[index].status = status;
-            houses[index].worker = status === 'doing' ? '나 (플레이어)' : '';
+            houses[index].status = 'doing';
+            houses[index].worker = workerName;
             saveHouses(houses);
             renderHouseList();
         }
 
-        function finishHouse(index) {
+        function finishRob(index) {
             let houses = getHouses();
-            houses[index].status = 'cooldown';
+            let h = houses[index];
+            
+            // 고정수입 자동 로그 기록
+            let logs = getLogs();
+            let now = new Date();
+            logs.unshift({
+                timeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                dateStr: now.toLocaleDateString(),
+                fullDate: now.toISOString(),
+                house: h.name,
+                cash: h.fixedIncome,
+                count: 0,
+                items: '주택 고정 수입'
+            });
+            saveLogs(logs);
+
+            // 5분 쿨타임 적용 (5 * 60 * 1000ms)
+            h.status = 'cooldown';
+            h.worker = '';
+            h.cooldownEnd = now.getTime() + (5 * 60 * 1000);
+            saveHouses(houses);
+
+            renderHouseList();
+            alert(`[${h.name}] 털이 완료! 고정 수입 $${h.fixedIncome.toLocaleString()}이 수익 통계에 반영되었습니다.`);
+        }
+
+        function resetHouse(index) {
+            let houses = getHouses();
+            houses[index].status = 'idle';
             houses[index].worker = '';
-            houses[index].cooldownEnd = new Date().getTime() + (5 * 60 * 1000); // 5분 쿨타임
+            houses[index].cooldownEnd = 0;
             saveHouses(houses);
             renderHouseList();
-            alert('빈집털이가 완료되었습니다! 5분간 쿨타임이 적용됩니다.');
         }
 
-        // 주택 현황 쿨타임 실시간 갱신 루프
+        // 1초마다 화면 쿨타임 실시간 갱신 루프
         setInterval(() => {
             if (!document.getElementById('view_status').classList.contains('hidden')) {
                 renderHouseList();
             }
         }, 1000);
 
-        // 2번 기능: 스크린샷 업로드 및 정산 반영
+        function updateLootSelect() {
+            let houses = getHouses();
+            let select = document.getElementById('lootHouseSelect');
+            select.innerHTML = '';
+            houses.forEach(h => {
+                select.innerHTML += `<option value="${h.name}">${h.name}</option>`;
+            });
+        }
+
         function handleImageUpload(e) {
             const file = e.target.files[0];
             if (file) {
@@ -325,11 +404,10 @@
             });
 
             saveLogs(logs);
-            alert('빈집털이 물품 및 수익 정산이 완료되었습니다! 통계에 반영되었습니다.');
+            alert('스크린샷 획득 물품 수익이 통계에 반영되었습니다!');
             switchTab('stats');
         }
 
-        // 4번 기능: 15분 알람 타이머
         let alarmInterval = null;
         let targetAlarmTime = 0;
 
@@ -347,7 +425,7 @@
                     clearInterval(alarmInterval);
                     document.getElementById('alarmDisplay').innerText = '00:00';
                     document.getElementById('alarmStatusText').innerText = '🎉 15분이 경과했습니다! 다시 빈집을 털러 가세요!';
-                    alert('⏰ 15분 대기 시간이 종료되었습니다! 새로운 빈집을 털 수 있습니다.');
+                    alert('⏰ 15분 대기 시간이 종료되었습니다!');
                     return;
                 }
 
@@ -363,11 +441,10 @@
             document.getElementById('alarmStatusText').innerText = '현재 대기 중인 알람이 없습니다.';
         }
 
-        // 5번 기능: 수익 및 아이템 통계표 계산
         function renderStats() {
             let logs = getLogs();
             let todayStr = new Date().toLocaleDateString();
-            let currentMonthStr = new Date().toISOString().slice(0, 7); // YYYY-MM
+            let currentMonthStr = new Date().toISOString().slice(0, 7);
 
             let todayEarnings = 0;
             let monthEarnings = 0;
@@ -392,7 +469,7 @@
             tbody.innerHTML = '';
 
             if (logs.length === 0) {
-                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-zinc-500">아직 정산된 빈집털이 기록이 없습니다.</td></tr>`;
+                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-zinc-500">아직 정산된 기록이 없습니다.</td></tr>`;
                 return;
             }
 
@@ -401,7 +478,7 @@
                     <tr class="hover:bg-red-500/5 transition">
                         <td class="py-2.5 px-2 text-zinc-400">${log.dateStr} ${log.timeStr}</td>
                         <td class="py-2.5 px-2 font-bold text-white">${log.house}</td>
-                        <td class="py-2.5 px-2 text-zinc-300">${log.items} <span class="text-[10px] text-red-400">(${log.count}개)</span></td>
+                        <td class="py-2.5 px-2 text-zinc-300">${log.items} <span class="text-[10px] text-red-400">${log.count > 0 ? '(' + log.count + '개)' : ''}</span></td>
                         <td class="py-2.5 px-2 text-right font-bold text-emerald-400">+$${log.cash.toLocaleString()}</td>
                     </tr>
                 `;
@@ -409,8 +486,8 @@
         }
 
         function clearStats() {
-            if (confirm('모든 빈집털이 정산 기록을 초기화하시겠습니까?')) {
-                localStorage.removeItem('rob_logs');
+            if (confirm('모든 통계 기록을 초기화하시겠습니까?')) {
+                localStorage.removeItem('rob_logs_v2');
                 renderStats();
             }
         }
