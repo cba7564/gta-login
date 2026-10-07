@@ -21,7 +21,7 @@
 </head>
 <body class="min-h-screen bg-[#070505] text-white flex flex-col items-center p-4 md:p-8">
     
-    <!-- 0. 로그인 (접근 인증) 화면 - 관리자 코드 노출 제거됨 -->
+    <!-- 0. 로그인 (접근 인증) 화면 -->
     <div id="authGateView" class="w-full max-w-md mx-auto my-auto bg-[#120707] border border-red-500/30 rounded-2xl p-8 red-glow space-y-6 text-center mt-20">
         <div class="space-y-2">
             <h1 class="text-3xl font-extrabold text-red-500 tracking-widest red-text-glow">빈집털이 시스템</h1>
@@ -115,47 +115,72 @@
             </div>
         </div>
 
-        <!-- 탭 3: AI 스크린샷 정산 -->
-        <div id="view_scan" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5">
+        <!-- 탭 3: AI 스크린샷 정산 (가독성 향상형 장바구니 구조) -->
+        <div id="view_scan" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-6">
             <div class="border-b border-red-500/20 pb-3">
                 <h2 class="text-base font-bold text-red-400">📸 AI 스크린샷 자동 인식 및 정산</h2>
-                <p class="text-xs text-zinc-400 mt-0.5">스크린샷을 업로드하고 [AI 자동 분석]을 누르면 모든 물품의 수량이 자동 입력됩니다.</p>
+                <p class="text-xs text-zinc-400 mt-0.5">스크린샷을 업로드하고 <strong>[AI 자동 분석]</strong>을 누르면 아래 장바구니에 수량이 자동 입력됩니다. 직접 확인하고 수정할 수 있습니다.</p>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="space-y-4">
-                    <div class="border-2 border-dashed border-red-500/30 rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-3 bg-[#0c0404] hover:border-red-500 transition cursor-pointer" onclick="document.getElementById('screenshotInput').click()">
-                        <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 text-xl">📁</div>
-                        <div>
-                            <p class="text-sm font-bold text-zinc-200">인벤토리 스크린샷 업로드</p>
-                            <p class="text-xs text-zinc-500 mt-1">클릭하여 캡처 파일 선택</p>
-                        </div>
-                        <input type="file" id="screenshotInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
-                        <div id="previewContainer" class="w-full hidden pt-2">
-                            <img id="imagePreview" class="max-h-40 mx-auto rounded-lg border border-red-500/30 object-contain">
-                        </div>
+            <!-- 상단: 스크린샷 업로드 및 AI 버튼 -->
+            <div class="bg-[#0c0404] p-5 rounded-2xl border border-red-500/20 grid grid-cols-1 md:grid-cols-2 gap-4 items-center">
+                <div class="border-2 border-dashed border-red-500/30 rounded-xl p-4 text-center flex flex-col items-center justify-center space-y-2 hover:border-red-500 transition cursor-pointer" onclick="document.getElementById('screenshotInput').click()">
+                    <div class="w-10 h-10 rounded-full bg-red-500/10 flex items-center justify-center text-red-400">📁</div>
+                    <div>
+                        <p class="text-xs font-bold text-zinc-200">스크린샷 업로드</p>
+                        <p class="text-[10px] text-zinc-500">클릭하여 캡처 파일 선택</p>
                     </div>
-                    <button onclick="runAiOcrAnalysis()" class="w-full py-3.5 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white font-bold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2">
+                    <input type="file" id="screenshotInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                    <div id="previewContainer" class="w-full hidden pt-1">
+                        <img id="imagePreview" class="max-h-28 mx-auto rounded-lg border border-red-500/30 object-contain">
+                    </div>
+                </div>
+
+                <div class="space-y-3">
+                    <button onclick="runAiOcrAnalysis()" class="w-full py-3 bg-gradient-to-r from-purple-600 to-pink-600 hover:opacity-90 text-white font-bold rounded-xl text-xs transition shadow-lg flex items-center justify-center gap-2">
                         🤖 AI로 스크린샷 물품 자동 인식하기
                     </button>
                     <div id="aiStatusText" class="text-center text-xs text-zinc-400">대기 중...</div>
                 </div>
+            </div>
 
-                <div class="space-y-4 bg-[#0c0404] p-5 rounded-2xl border border-red-500/20">
+            <!-- 하단: 장바구니 스타일 가독성 극대화 리스트 & 실시간 계산 -->
+            <div class="space-y-4 bg-[#0c0404] p-5 rounded-2xl border border-red-500/20">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
-                        <label class="text-xs text-zinc-400 font-bold">털이 완료한 장소 선택</label>
+                        <label class="text-xs text-zinc-400 font-bold">털이 완료한 장소</label>
                         <select id="lootHouseSelect" class="w-full px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500"></select>
                     </div>
-
-                    <div class="space-y-2">
-                        <h3 class="text-xs font-bold text-red-300 uppercase tracking-wider">장바구니 수량 확인 및 수정</h3>
-                        <div id="cartItemsContainer" class="grid grid-cols-1 gap-2 max-h-48 overflow-y-auto pr-1"></div>
+                    <div class="space-y-1">
+                        <label class="text-xs text-zinc-400 font-bold">추가 현금 획득액 (스크린샷 내 현금 ₩)</label>
+                        <input type="number" id="extraCashInput" value="0" min="0" oninput="calculateLiveTotal()" placeholder="예: 24937" class="w-full px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500 font-mono">
                     </div>
-
-                    <button onclick="submitCartCalculation()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-lg">
-                        💰 최종 수익 정산 및 통계 반영
-                    </button>
                 </div>
+
+                <div class="space-y-2 pt-2">
+                    <div class="flex justify-between items-center">
+                        <h3 class="text-xs font-bold text-red-300 uppercase tracking-wider">📦 획득 물품 수량 확인 및 장바구니 목록</h3>
+                        <span class="text-[11px] text-zinc-400">개수를 직접 수정할 수 있습니다</span>
+                    </div>
+                    <!-- 가독성을 높인 장바구니 그리드 (물품별 카드 형태) -->
+                    <div id="cartItemsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1"></div>
+                </div>
+
+                <!-- 실시간 예상 수익 미리보기 바 -->
+                <div class="bg-[#1a0808] border border-red-500/40 rounded-xl p-4 flex justify-between items-center">
+                    <div>
+                        <p class="text-[11px] text-zinc-400">현재 선택된 획득 물품 수</p>
+                        <p id="liveItemCount" class="text-sm font-bold text-amber-400">0개</p>
+                    </div>
+                    <div class="text-right">
+                        <p class="text-[11px] text-zinc-400">🧮 총 예상 수익금</p>
+                        <p id="liveTotalEarnings" class="text-xl font-extrabold text-emerald-400">0원</p>
+                    </div>
+                </div>
+
+                <button onclick="submitCartCalculation()" class="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-red-900/40">
+                    💰 최종 수익 정산 및 통계 반영하기
+                </button>
             </div>
         </div>
 
@@ -240,27 +265,27 @@
         ];
 
         function getItems() {
-            let data = localStorage.getItem('rob_items_v8');
+            let data = localStorage.getItem('rob_items_v9');
             return data ? JSON.parse(data) : defaultItems;
         }
         function saveItems(items) {
-            localStorage.setItem('rob_items_v8', JSON.stringify(items));
+            localStorage.setItem('rob_items_v9', JSON.stringify(items));
         }
 
         function getHouses() {
-            let data = localStorage.getItem('rob_houses_v8');
+            let data = localStorage.getItem('rob_houses_v9');
             return data ? JSON.parse(data) : defaultHouses;
         }
         function saveHouses(houses) {
-            localStorage.setItem('rob_houses_v8', JSON.stringify(houses));
+            localStorage.setItem('rob_houses_v9', JSON.stringify(houses));
         }
 
         function getLogs() {
-            let data = localStorage.getItem('rob_logs_v8');
+            let data = localStorage.getItem('rob_logs_v9');
             return data ? JSON.parse(data) : [];
         }
         function saveLogs(logs) {
-            localStorage.setItem('rob_logs_v8', JSON.stringify(logs));
+            localStorage.setItem('rob_logs_v9', JSON.stringify(logs));
         }
 
         function getInviteCodes() {
@@ -283,10 +308,7 @@
 
         function tryLogin() {
             let code = document.getElementById('accessCodeInput').value.trim();
-            if (!code) {
-                alert('접근 코드를 입력해주세요.');
-                return;
-            }
+            if (!code) { alert('접근 코드를 입력해주세요.'); return; }
 
             if (code === 'abc7564') {
                 currentSession = { role: 'admin', name: '최고관리자' };
@@ -584,18 +606,39 @@
 
             items.forEach((it, idx) => {
                 container.innerHTML += `
-                    <div class="flex items-center justify-between bg-[#160808] p-2.5 rounded-xl border border-red-500/20">
+                    <div class="flex items-center justify-between bg-[#160808] p-3 rounded-xl border border-red-500/20">
                         <div>
-                            <span class="font-bold text-white text-xs">${it.name}</span>
-                            <span class="block text-[10px] text-emerald-400">${it.price.toLocaleString()}원</span>
+                            <span class="font-bold text-white text-xs block">${it.name}</span>
+                            <span class="text-[10px] text-emerald-400 font-mono">${it.price.toLocaleString()}원 / 개</span>
                         </div>
                         <div class="flex items-center gap-1.5">
-                            <input type="number" id="cart_qty_${idx}" value="0" min="0" data-price="${it.price}" data-name="${it.name}" class="cart-qty-input w-16 px-2 py-1 bg-[#0c0404] border border-red-500/30 rounded-lg text-white text-xs text-center focus:outline-none focus:border-red-500">
+                            <input type="number" id="cart_qty_${idx}" value="0" min="0" data-price="${it.price}" data-name="${it.name}" oninput="calculateLiveTotal()" class="cart-qty-input w-16 px-2 py-1.5 bg-[#0c0404] border border-red-500/30 rounded-lg text-white text-xs text-center focus:outline-none focus:border-red-500 font-bold">
                             <span class="text-[10px] text-zinc-400">개</span>
                         </div>
                     </div>
                 `;
             });
+            calculateLiveTotal();
+        }
+
+        // 실시간 예상 수익 계산 함수
+        function calculateLiveTotal() {
+            let qtyInputs = document.querySelectorAll('.cart-qty-input');
+            let extraCash = parseInt(document.getElementById('extraCashInput').value) || 0;
+            let totalCash = extraCash;
+            let totalCount = 0;
+
+            qtyInputs.forEach(input => {
+                let qty = parseInt(input.value) || 0;
+                if (qty > 0) {
+                    let price = parseInt(input.getAttribute('data-price')) || 0;
+                    totalCash += price * qty;
+                    totalCount += qty;
+                }
+            });
+
+            document.getElementById('liveItemCount').innerText = `${totalCount}개`;
+            document.getElementById('liveTotalEarnings').innerText = `${totalCash.toLocaleString()}원`;
         }
 
         function handleImageUpload(e) {
@@ -610,6 +653,7 @@
             }
         }
 
+        // 🤖 강화된 AI OCR 분석 및 수량 정확 매칭
         async function runAiOcrAnalysis() {
             const previewImg = document.getElementById('imagePreview');
             const statusEl = document.getElementById('aiStatusText');
@@ -625,9 +669,20 @@
                 const processedImageUrl = await invertImageColors(previewImg);
                 const { data: { text } } = await Tesseract.recognize(processedImageUrl, 'kor+eng');
 
+                console.log("OCR 전체 인식 결과:", text);
+
                 let items = getItems();
                 let matchedCount = 0;
                 let cleanText = text.replace(/\s+/g, ' ');
+
+                // 스크린샷 내 현금 인식 시도 (예: W24,937 또는 ₩24,937)
+                let cashMatch = cleanText.match(/[W₩]\s*([0-9,]+)/);
+                if (cashMatch && cashMatch[1]) {
+                    let parsedCash = parseInt(cashMatch[1].replace(/,/g, ''), 10);
+                    if (parsedCash > 1000) {
+                        document.getElementById('extraCashInput').value = parsedCash;
+                    }
+                }
 
                 items.forEach((it, idx) => {
                     let inputEl = document.getElementById(`cart_qty_${idx}`);
@@ -636,8 +691,9 @@
                     let index = cleanText.indexOf(it.name);
                     if (index !== -1) {
                         let qty = 1;
-                        let sub = cleanText.substring(index + it.name.length, index + it.name.length + 15);
-                        let match = sub.match(/x\s*([0-9]+)/i) || sub.match(/([0-9]+)/);
+                        let sub = cleanText.substring(index + it.name.length, index + it.name.length + 12);
+                        // x 뒤에 오는 숫자 정확히 추출 (예: x1, x3 -> 1, 3)
+                        let match = sub.match(/x\s*([0-9]+)/i);
                         if (match && match[1]) {
                             let parsed = parseInt(match[1], 10);
                             if (parsed > 0 && parsed < 100) {
@@ -649,9 +705,11 @@
                     }
                 });
 
-                statusEl.innerText = `✨ AI 분석 완료! 총 ${matchedCount}개의 물품을 인식했습니다.`;
-                alert(`AI 분석 완료! 총 ${matchedCount}개의 물품을 찾아 수량을 자동으로 채웠습니다.`);
+                calculateLiveTotal();
+                statusEl.innerText = `✨ AI 분석 완료! 총 ${matchedCount}개의 물품을 인식했습니다. 수량을 확인하세요.`;
+                alert(`AI 분석 완료! 총 ${matchedCount}개의 물품을 인식하여 아래 장바구니에 채웠습니다. 오인식된 부분이 있다면 직접 수정하세요.`);
             } catch (err) {
+                console.error(err);
                 statusEl.innerText = '❌ 분석 실패. 수동으로 입력해주세요.';
                 alert('AI 분석 중 오류가 발생했습니다.');
             }
@@ -680,8 +738,14 @@
         function submitCartCalculation() {
             let house = document.getElementById('lootHouseSelect').value;
             let qtyInputs = document.querySelectorAll('.cart-qty-input');
-            let totalCash = 0, totalItemCount = 0;
+            let extraCash = parseInt(document.getElementById('extraCashInput').value) || 0;
+            let totalCash = extraCash;
+            let totalItemCount = 0;
             let summaryList = [];
+
+            if (extraCash > 0) {
+                summaryList.push(`현금 ${extraCash.toLocaleString()}원`);
+            }
 
             qtyInputs.forEach(input => {
                 let qty = parseInt(input.value) || 0;
@@ -694,8 +758,8 @@
                 }
             });
 
-            if (totalItemCount === 0) {
-                alert('정산할 물품의 수량을 입력해주세요.');
+            if (totalItemCount === 0 && extraCash === 0) {
+                alert('정산할 물품의 수량이나 현금을 입력해주세요.');
                 return;
             }
 
@@ -712,7 +776,7 @@
             });
 
             saveLogs(logs);
-            alert(`정산 완료! 총 수익: ${totalCash.toLocaleString()}원`);
+            alert(`정산 완료!\n총 수익: ${totalCash.toLocaleString()}원\n통계에 반영되었습니다.`);
             switchTab('stats');
         }
 
@@ -783,7 +847,7 @@
 
         function clearStats() {
             if (confirm('통계 기록을 초기화하시겠습니까?')) {
-                localStorage.removeItem('rob_logs_v8');
+                localStorage.removeItem('rob_logs_v9');
                 renderStats();
             }
         }
