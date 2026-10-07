@@ -3,190 +3,176 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>P!NK PANTY - 클럽 통합 운영시스템</title>
+    <title>빈집털이 집계 시스템</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Pretendard:wght@400;600;800&display=swap');
         body { font-family: 'Pretendard', sans-serif; }
-        .neon-glow {
-            box-shadow: 0 0 20px rgba(236, 72, 153, 0.3), inset 0 0 15px rgba(236, 72, 153, 0.1);
+        .red-glow {
+            box-shadow: 0 0 25px rgba(239, 68, 68, 0.25), inset 0 0 15px rgba(239, 68, 68, 0.1);
         }
-        .neon-text {
-            text-shadow: 0 0 10px rgba(236, 72, 153, 0.7), 0 0 20px rgba(236, 72, 153, 0.5);
+        .red-text-glow {
+            text-shadow: 0 0 12px rgba(239, 68, 68, 0.7), 0 0 25px rgba(239, 68, 68, 0.4);
         }
     </style>
 </head>
-<body class="min-h-screen bg-[#09050b] text-white flex flex-col items-center p-4 md:p-8">
+<body class="min-h-screen bg-[#070505] text-white flex flex-col items-center p-4 md:p-8">
     
     <div class="w-full max-w-4xl mx-auto space-y-6">
         
-        <!-- 상단 타이틀 -->
-        <div class="text-center space-y-1 border-b border-pink-500/20 pb-4">
-            <h1 class="text-2xl md:text-3xl font-extrabold text-pink-400 tracking-wider neon-text">
-                P!NK PANTY • 클럽 통합 운영시스템
+        <!-- 1번 요구사항: 메인 가운데 붉은 글씨 제목 -->
+        <div class="text-center space-y-2 py-6 border-b border-red-500/20">
+            <h1 class="text-3xl md:text-5xl font-extrabold text-red-500 tracking-widest red-text-glow">
+                빈집털이 집계
             </h1>
-            <p class="text-xs text-pink-300/70">조직도 슬롯 및 멤버 교체형 출퇴근 관리 포털</p>
+            <p class="text-xs text-red-300/60 font-medium">실시간 주택 현황, 스크린샷 정산 및 수익 통계 시스템</p>
         </div>
 
-        <!-- 0. 로그인 / 회원가입 화면 -->
-        <div id="authWrapper" class="max-w-md mx-auto bg-[#130717] border border-pink-500/30 rounded-2xl p-6 shadow-2xl neon-glow">
-            <div class="flex gap-2 mb-6">
-                <button id="loginTabBtn" onclick="switchAuthTab('login')" class="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-pink-600 text-white shadow-md">
-                    로그인
-                </button>
-                <button id="signupTabBtn" onclick="switchAuthTab('signup')" class="flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20">
-                    회원가입
-                </button>
-            </div>
-
-            <!-- 로그인 폼 -->
-            <form id="loginForm" onsubmit="handleLogin(event)" class="space-y-4">
-                <div>
-                    <input type="email" id="loginEmail" required placeholder="이메일" class="w-full px-4 py-3 bg-[#170a1c] border border-pink-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 text-sm">
-                </div>
-                <div>
-                    <input type="password" id="loginPw" required placeholder="비밀번호" class="w-full px-4 py-3 bg-[#170a1c] border border-pink-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 text-sm">
-                </div>
-                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-rose-500 hover:opacity-90 text-white font-bold rounded-xl transition shadow-lg text-sm">
-                    로그인
-                </button>
-                <div class="text-[11px] text-zinc-400 space-y-1 pt-2 border-t border-pink-500/20">
-                    <p>🔧 관리자: <span class="text-pink-300 font-mono">admin@admin.com</span> / <span class="text-pink-300 font-mono">admin123</span></p>
-                    <p>👑 사장: <span class="text-pink-300 font-mono">boss@boss.com</span> / <span class="text-pink-300 font-mono">boss123</span></p>
-                </div>
-            </form>
-
-            <!-- 회원가입 폼 -->
-            <form id="signupForm" onsubmit="handleSignup(event)" class="space-y-3.5 hidden">
-                <div>
-                    <input type="text" id="signupCode" required placeholder="가입 코드 (조직도 슬롯 코드 또는 일반 코드)" class="w-full px-4 py-3 bg-[#170a1c] border border-pink-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 text-sm">
-                </div>
-                <div>
-                    <input type="email" id="signupEmail" required placeholder="이메일" class="w-full px-4 py-3 bg-[#170a1c] border border-pink-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 text-sm">
-                </div>
-                <div>
-                    <input type="password" id="signupPw" required placeholder="비밀번호" class="w-full px-4 py-3 bg-[#170a1c] border border-pink-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 text-sm">
-                </div>
-                <div>
-                    <input type="text" id="signupName" required placeholder="이름 (닉네임)" class="w-full px-4 py-3 bg-[#170a1c] border border-pink-500/30 rounded-xl text-white placeholder-zinc-500 focus:outline-none focus:border-pink-500 text-sm">
-                </div>
-                <button type="submit" class="w-full py-3.5 bg-gradient-to-r from-pink-600 to-rose-500 hover:opacity-90 text-white font-bold rounded-xl transition shadow-lg text-sm">
-                    가입하기
-                </button>
-                <p class="text-[11px] text-zinc-400 text-center pt-1">테스트용 코드 (랑랑 슬롯): <span class="text-pink-400 font-bold">RANG1234</span></p>
-            </form>
+        <!-- 탭 네비게이션 -->
+        <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
+            <button onclick="switchTab('status')" id="tabBtn_status" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-red-600 text-white shadow-lg shadow-red-900/40 transition">🏠 주택 현황 & 쿨타임</button>
+            <button onclick="switchTab('scan')" id="tabBtn_scan" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">📸 스크린샷 물품 집계</button>
+            <button onclick="switchTab('alarm')" id="tabBtn_alarm" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">⏰ 15분 털이 알람</button>
+            <button onclick="switchTab('stats')" id="tabBtn_stats" class="py-3 rounded-xl font-bold text-xs md:text-sm bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition">📊 수익 & 아이템 통계</button>
         </div>
 
-        <!-- 1. 관리자 대시보드 -->
-        <div id="adminDashboard" class="hidden space-y-6">
-            <div class="flex justify-between items-center bg-[#130717] border border-pink-500/30 p-4 rounded-2xl">
-                <div>
-                    <h2 class="text-lg font-bold text-pink-400">🔧 관리자 제어판</h2>
-                    <p class="text-xs text-zinc-400">코드 발급 및 강제탈퇴 최종 승인 및 회원 삭제</p>
+        <!-- 2번 요구사항 탭: 주택 현황 및 온/오프, 5분 쿨타임 -->
+        <div id="view_status" class="space-y-4">
+            <div class="bg-[#120707] border border-red-500/30 rounded-2xl p-5 red-glow space-y-4">
+                <div class="flex justify-between items-center border-b border-red-500/20 pb-3">
+                    <h2 class="text-base font-bold text-red-400">🏠 주택별 침입 현황 및 5분 쿨타임</h2>
+                    <span class="text-xs text-zinc-400">상태를 변경하여 팀원들과 공유하세요</span>
                 </div>
-                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">로그아웃</button>
-            </div>
-
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
-                <div class="bg-[#130717] border border-pink-500/30 rounded-2xl p-5 space-y-3">
-                    <h3 class="text-sm font-bold text-pink-300">새 일반 가입 코드 발급</h3>
-                    <select id="codeTargetRole" class="w-full px-3 py-2.5 bg-[#170a1c] border border-pink-500/30 rounded-xl text-white text-sm">
-                        <option value="사장">사장</option>
-                        <option value="경호원">경호원</option>
-                    </select>
-                    <button onclick="generateCode()" class="w-full py-2.5 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-sm transition">코드 생성하기</button>
-                    <div id="adminCodeList" class="space-y-2 max-h-36 overflow-y-auto pr-1 pt-2"></div>
+                
+                <div id="houseListContainer" class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    <!-- 동적 생성 -->
                 </div>
-
-                <div class="bg-[#130717] border border-pink-500/30 rounded-2xl p-5 space-y-3">
-                    <h3 class="text-sm font-bold text-rose-400">🚨 사장이 요청한 강제탈퇴 승인 대기함</h3>
-                    <div id="adminKickRequestsList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
-                </div>
-            </div>
-
-            <div class="bg-[#130717] border border-pink-500/30 rounded-2xl p-5 space-y-3">
-                <h3 class="text-sm font-bold text-zinc-200">👥 전체 가입된 회원 명단 (강제탈퇴 시 슬롯이 비워짐)</h3>
-                <div id="adminAllUsersList" class="space-y-2 max-h-48 overflow-y-auto pr-1"></div>
             </div>
         </div>
 
-        <!-- 2. 사장 대시보드 -->
-        <div id="bossDashboard" class="hidden space-y-6">
-            <div class="flex justify-between items-center bg-[#130717] border border-pink-500/30 p-4 rounded-2xl">
-                <div>
-                    <h2 class="text-lg font-bold text-pink-400">👑 사장 총괄 대시보드</h2>
-                    <p class="text-xs text-zinc-400">조직도 이름 변경, 새 사람 교체용 코드 관리, 탈퇴 제안</p>
+        <!-- 3번 요구사항 탭: 스크린샷 기반 물품 자동 집계 및 수익 계산 -->
+        <div id="view_scan" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow space-y-5 hidden">
+            <div class="border-b border-red-500/20 pb-3">
+                <h2 class="text-base font-bold text-red-400">📸 털이 완료물품 스크린샷 정산</h2>
+                <p class="text-xs text-zinc-400 mt-0.5">인벤토리 스크린샷을 올리면 AI가 자동 인식하거나 수동으로 품목을 입력해 정산합니다.</p>
+            </div>
+
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
+                <!-- 업로드 박스 -->
+                <div class="border-2 border-dashed border-red-500/30 rounded-2xl p-6 text-center flex flex-col items-center justify-center space-y-3 bg-[#0c0404] hover:border-red-500 transition cursor-pointer" onclick="document.getElementById('screenshotInput').click()">
+                    <div class="w-12 h-12 rounded-full bg-red-500/10 flex items-center justify-center text-red-400 text-xl">📁</div>
+                    <div>
+                        <p class="text-sm font-bold text-zinc-200">스크린샷 이미지 업로드</p>
+                        <p class="text-xs text-zinc-500 mt-1">클릭하여 인벤토리 캡처 파일을 선택하세요</p>
+                    </div>
+                    <input type="file" id="screenshotInput" accept="image/*" class="hidden" onchange="handleImageUpload(event)">
+                    <div id="previewContainer" class="w-full hidden pt-2">
+                        <img id="imagePreview" class="max-h-36 mx-auto rounded-lg border border-red-500/30 object-contain">
+                    </div>
                 </div>
-                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">로그아웃</button>
+
+                <!-- 집계 폼 및 결과 입력 -->
+                <div class="space-y-4 bg-[#0c0404] p-5 rounded-2xl border border-red-500/20">
+                    <h3 class="text-xs font-bold text-red-300 uppercase tracking-wider">획득 품목 수동/자동 확인</h3>
+                    
+                    <div class="space-y-2">
+                        <label class="text-xs text-zinc-400">장소 선택</label>
+                        <select id="lootHouseSelect" class="w-full px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500">
+                            <option value="팔레토 베이 주택 1">팔레토 베이 주택 1</option>
+                            <option value="팔레토 베이 주택 2">팔레토 베이 주택 2</option>
+                            <option value="샌디 쇼어스 주택 1">샌디 쇼어스 주택 1</option>
+                            <option value="미션 로우 주택 1">미션 로우 주택 1</option>
+                        </select>
+                    </div>
+
+                    <div class="grid grid-cols-2 gap-2">
+                        <div>
+                            <label class="text-xs text-zinc-400">현금 ($)</label>
+                            <input type="number" id="lootCash" value="15000" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
+                        </div>
+                        <div>
+                            <label class="text-xs text-zinc-400">귀금속/시계 (개)</label>
+                            <input type="number" id="lootItemsCount" value="4" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
+                        </div>
+                    </div>
+
+                    <div>
+                        <label class="text-xs text-zinc-400">주요 획득 물품명</label>
+                        <input type="text" id="lootItemNames" value="고급 손목시계, 금괴, 다이아몬드 목걸이" class="w-full px-3 py-2 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs">
+                    </div>
+
+                    <button onclick="submitLootResult()" class="w-full py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-lg shadow-red-900/30">
+                        💰 수익 정산 및 통계 반영하기
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 4번 요구사항 탭: 15분 재진행 알람 기능 -->
+        <div id="view_alarm" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5 text-center">
+            <div class="border-b border-red-500/20 pb-3 text-left">
+                <h2 class="text-base font-bold text-red-400">⏰ 빈집털이 완료 후 15분 재진행 알람</h2>
+                <p class="text-xs text-zinc-400">털이가 끝난 직후 버튼을 누르면 15분 뒤 알람(타이머)이 작동합니다.</p>
             </div>
 
-            <div class="flex flex-wrap gap-2">
-                <button onclick="switchBossTab('org')" id="btnBossOrg" class="px-4 py-2 rounded-xl font-bold text-xs bg-pink-600 text-white">조직도 이름 및 슬롯 코드 관리</button>
-                <button onclick="switchBossTab('workers')" id="btnBossWorkers" class="px-4 py-2 rounded-xl font-bold text-xs bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20">직원 관리 및 탈퇴 제안</button>
-                <button onclick="switchBossTab('logs')" id="btnBossLogs" class="px-4 py-2 rounded-xl font-bold text-xs bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20">출근 집계표</button>
+            <div class="py-8 space-y-4 max-w-sm mx-auto bg-[#0c0404] p-6 rounded-2xl border border-red-500/20">
+                <div id="alarmDisplay" class="text-4xl font-extrabold text-red-500 font-mono tracking-widest red-text-glow">
+                    00:00
+                </div>
+                <p id="alarmStatusText" class="text-xs text-zinc-400">현재 대기 중인 알람이 없습니다.</p>
+                <div class="grid grid-cols-2 gap-3 pt-2">
+                    <button onclick="startFifteenMinAlarm()" class="py-3 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition">
+                        🚨 15분 타이머 시작
+                    </button>
+                    <button onclick="resetAlarm()" class="py-3 bg-zinc-800 hover:bg-zinc-700 text-zinc-300 font-bold rounded-xl text-xs transition">
+                        초기화
+                    </button>
+                </div>
+            </div>
+        </div>
+
+        <!-- 5번 요구사항 탭: 오늘 하루 수익, 월수익, 얻은 물품 총 갯수 통계표 -->
+        <div id="view_stats" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-6">
+            <div class="border-b border-red-500/20 pb-3 flex justify-between items-center">
+                <h2 class="text-base font-bold text-red-400">📊 수익 및 획득 물품 통계표</h2>
+                <button onclick="clearStats()" class="px-3 py-1 bg-red-500/20 text-red-400 border border-red-500/30 rounded-lg text-xs hover:bg-red-500 hover:text-white transition">통계 초기화</button>
             </div>
 
-            <!-- 사장 탭 1: 조직도 이름 변경 및 코드 관리 -->
-            <div id="bossTabOrg" class="bg-[#130717] border border-pink-500/30 rounded-2xl p-5 space-y-4">
-                <h3 class="text-sm font-bold text-pink-300">⚙️ 조직도 멤버 이름 변경 및 슬롯 코드 관리</h3>
-                <p class="text-xs text-zinc-400">기존 멤버가 탈퇴하거나 교체될 때 이곳에서 <span class="text-pink-400 font-bold">이름을 새 사람으로 수정</span>하고 저장하시면 즉시 새로운 이름으로 교체됩니다!</p>
-                <div id="bossMemberEditContainer" class="space-y-3"></div>
-                <button onclick="saveBossMemberSettings()" class="py-2.5 px-6 bg-pink-600 hover:bg-pink-500 text-white font-bold rounded-xl text-sm transition">변경사항 저장하기</button>
+            <!-- 요약 카드 -->
+            <div class="grid grid-cols-1 sm:grid-cols-3 gap-4">
+                <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
+                    <p class="text-xs text-zinc-400">📅 오늘 하루 수익</p>
+                    <p id="statTodayEarnings" class="text-xl font-extrabold text-emerald-400">$0</p>
+                </div>
+                <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
+                    <p class="text-xs text-zinc-400">🗓️ 이번 달 총 수익</p>
+                    <p id="statMonthEarnings" class="text-xl font-extrabold text-red-400">$0</p>
+                </div>
+                <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 text-center space-y-1">
+                    <p class="text-xs text-zinc-400">📦 오늘 획득 물품 총 갯수</p>
+                    <p id="statTodayItemCount" class="text-xl font-extrabold text-amber-400">0개</p>
+                </div>
             </div>
 
-            <!-- 사장 탭 2: 직원 관리 및 탈퇴 제안 -->
-            <div id="bossTabWorkers" class="bg-[#130717] border border-pink-500/30 rounded-2xl p-5 space-y-4 hidden">
-                <h3 class="text-sm font-bold text-pink-300">👥 직원 명단 및 관리자에게 강제탈퇴 제안</h3>
-                <div id="bossWorkersList" class="space-y-2 max-h-60 overflow-y-auto pr-1"></div>
-            </div>
-
-            <!-- 사장 탭 3: 출근 집계표 -->
-            <div id="bossTabLogs" class="bg-[#130717] border border-pink-500/30 rounded-2xl p-5 space-y-4 hidden">
-                <h3 class="text-sm font-bold text-pink-300">📈 전체 직원 출근 및 근무 시간 집계</h3>
+            <!-- 상세 정산 기록 테이블 -->
+            <div class="space-y-2">
+                <h3 class="text-xs font-bold text-zinc-300">최근 빈집털이 정산 내역</h3>
                 <div class="overflow-x-auto">
                     <table class="w-full text-left text-xs">
                         <thead>
-                            <tr class="border-b border-pink-500/25 text-pink-300">
-                                <th class="py-2 px-2">날짜</th>
-                                <th class="py-2 px-2">조직도 슬롯 (담당 멤버)</th>
-                                <th class="py-2 px-2">출근</th>
-                                <th class="py-2 px-2">퇴근</th>
-                                <th class="py-2 px-2 text-right">총 근무 시간</th>
+                            <tr class="border-b border-red-500/25 text-red-300">
+                                <th class="py-2.5 px-2">시각</th>
+                                <th class="py-2.5 px-2">장소</th>
+                                <th class="py-2.5 px-2">획득 물품</th>
+                                <th class="py-2.5 px-2 text-right">수익금</th>
                             </tr>
                         </thead>
-                        <tbody id="bossLogsTableBody" class="divide-y divide-pink-500/10"></tbody>
+                        <tbody id="statsTableBody" class="divide-y divide-red-500/10">
+                            <!-- 동적 삽입 -->
+                        </tbody>
                     </table>
                 </div>
-            </div>
-        </div>
-
-        <!-- 3. 공주 / 경호원 대시보드 -->
-        <div id="workerDashboard" class="hidden space-y-6">
-            <div class="flex justify-between items-center bg-[#130717] border border-pink-500/30 p-4 rounded-2xl">
-                <div>
-                    <h2 id="workerWelcomeTitle" class="text-lg font-bold text-pink-400">직원 전용 포털</h2>
-                    <p id="workerRoleBadge" class="text-xs text-pink-300/70">직급</p>
-                </div>
-                <button onclick="logout()" class="px-3 py-1.5 bg-zinc-800 hover:bg-zinc-700 text-xs text-zinc-300 rounded-lg transition">로그아웃</button>
-            </div>
-
-            <!-- 본인 출퇴근 컨트롤 박스 -->
-            <div class="bg-[#130717] border border-pink-500/30 rounded-2xl p-6 text-center space-y-4 neon-glow">
-                <div id="myAssignedSlotInfo" class="text-xs text-pink-400 font-bold">담당 조직도 슬롯: 없음</div>
-                <div id="myAttendanceStatus" class="text-sm font-medium text-zinc-300">현재 상태 확인 중...</div>
-                <div class="grid grid-cols-2 gap-3 max-w-sm mx-auto">
-                    <button onclick="doWorkerCheckIn()" class="py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl text-sm transition shadow-lg">🟢 출근하기</button>
-                    <button onclick="doWorkerCheckOut()" class="py-3 bg-rose-600 hover:bg-rose-500 text-white font-bold rounded-xl text-sm transition shadow-lg">🔴 퇴근하기</button>
-                </div>
-                <div id="myTimeLog" class="text-xs text-zinc-500">기록 없음</div>
-            </div>
-
-            <!-- P!NK PANTY 조직도 카드 현황 -->
-            <div class="space-y-4 pt-2">
-                <h3 class="text-sm font-bold text-pink-400 text-center">👑 P!NK PANTY 실시간 조직도 출퇴근 현황</h3>
-                <div id="workerJokerContainer" class="flex justify-center"></div>
-                <div id="workerGridContainer" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-4"></div>
             </div>
         </div>
 
@@ -194,456 +180,239 @@
 
     <!-- 스크립트 로직 -->
     <script>
-        const DB_VER = 'pp_slot_master_v3';
-        if (localStorage.getItem('pp_ver') !== DB_VER) {
-            localStorage.clear();
-            localStorage.setItem('pp_ver', DB_VER);
+        // 초기 주택 데이터 설정
+        const defaultHouses = [
+            { id: 'p1', name: '팔레토 베이 주택 1', status: 'idle', worker: '', cooldownEnd: 0 },
+            { id: 'p2', name: '팔레토 베이 주택 2', status: 'idle', worker: '', cooldownEnd: 0 },
+            { id: 's1', name: '샌디 쇼어스 주택 1', status: 'idle', worker: '', cooldownEnd: 0 },
+            { id: 'm1', name: '미션 로우 주택 1', status: 'idle', worker: '', cooldownEnd: 0 }
+        ];
+
+        function getHouses() {
+            let data = localStorage.getItem('rob_houses');
+            return data ? JSON.parse(data) : defaultHouses;
+        }
+        function saveHouses(houses) {
+            localStorage.setItem('rob_houses', JSON.stringify(houses));
         }
 
-        if (!localStorage.getItem('pp_codes')) {
-            localStorage.setItem('pp_codes', JSON.stringify([
-                { code: 'GUARD123', role: '경호원' }
-            ]));
+        function getLogs() {
+            let data = localStorage.getItem('rob_logs');
+            return data ? JSON.parse(data) : [];
         }
-        if (!localStorage.getItem('pp_users')) {
-            localStorage.setItem('pp_users', JSON.stringify([
-                { email: 'admin@admin.com', pw: 'admin123', name: '최고관리자', role: '관리자' },
-                { email: 'boss@boss.com', pw: 'boss123', name: '대표사장', role: '사장' }
-            ]));
-        }
-        // 조직도 슬롯 정의 (고유 slotId와 동적 name, code 관리)
-        if (!localStorage.getItem('pp_custom_members')) {
-            localStorage.setItem('pp_custom_members', JSON.stringify([
-                { id: 'joker', role: 'JOKER', name: '밤망이', code: 'JOKER12', desc: 'P.P를 대표하는 존재', icon: '👑' },
-                { id: 'ace', role: 'HEART • Ace', name: '랑랑', code: 'RANG1234', desc: 'P.P의 중심이 되는 멤버', icon: '💎' },
-                { id: 'king', role: 'HEART • King', name: '뽀오니', code: 'POON1234', desc: 'P.P의 중심이 되는 멤버', icon: '👑' },
-                { id: 'queen', role: 'DIAMOND • Queen', name: '김나박이', code: 'KIM12345', desc: 'P.P에서 신뢰받는 멤버', icon: '💠' },
-                { id: 'jack', role: 'DIAMOND • Jack', name: '하연지', code: 'HA123456', desc: 'P.P에서 신뢰받는 멤버', icon: '♠️' },
-                { id: 'spade10', role: 'SPADE • 10', name: '공주아', code: 'GONG1234', desc: 'P.P와 함께 활동하는 멤버', icon: '⚔️' },
-                { id: 'clover9', role: 'CLOVER • 9', name: '냐냥', code: 'NYANG123', desc: 'P.P의 시작을 함께하는 멤버', icon: '🍀' }
-            ]));
-        }
-        if (!localStorage.getItem('pp_kick_requests')) localStorage.setItem('pp_kick_requests', JSON.stringify([]));
-        if (!localStorage.getItem('pp_attendance_active')) localStorage.setItem('pp_attendance_active', JSON.stringify({}));
-        if (!localStorage.getItem('pp_attendance_logs')) localStorage.setItem('pp_attendance_logs', JSON.stringify([]));
-
-        let currentUser = null;
-
-        function switchAuthTab(tab) {
-            const loginBtn = document.getElementById('loginTabBtn');
-            const signupBtn = document.getElementById('signupTabBtn');
-            const loginForm = document.getElementById('loginForm');
-            const signupForm = document.getElementById('signupForm');
-
-            if (tab === 'login') {
-                loginBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-pink-600 text-white shadow-md";
-                signupBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20";
-                loginForm.classList.remove('hidden');
-                signupForm.classList.add('hidden');
-            } else {
-                signupBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-pink-600 text-white shadow-md";
-                loginBtn.className = "flex-1 py-2.5 rounded-xl font-bold text-sm transition-all bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20";
-                signupForm.classList.remove('hidden');
-                loginForm.classList.add('hidden');
-            }
+        function saveLogs(logs) {
+            localStorage.setItem('rob_logs', JSON.stringify(logs));
         }
 
-        // 회원가입 (슬롯 코드 또는 일반 코드로 가입)
-        function handleSignup(e) {
-            e.preventDefault();
-            const code = document.getElementById('signupCode').value.trim();
-            const email = document.getElementById('signupEmail').value.trim();
-            const pw = document.getElementById('signupPw').value.trim();
-            const name = document.getElementById('signupName').value.trim();
-
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            let matchedMember = members.find(m => m.code === code);
-            let codes = JSON.parse(localStorage.getItem('pp_codes'));
-            let matchedGeneralCode = codes.find(c => c.code === code);
-
-            let assignedSlotId = null;
-            let role = '공주';
-
-            if (matchedMember) {
-                assignedSlotId = matchedMember.id; // 슬롯 고유 ID 매칭
-            } else if (matchedGeneralCode) {
-                role = matchedGeneralCode.role;
-            } else {
-                alert('유효하지 않은 가입 코드입니다.');
-                return;
-            }
-
-            let users = JSON.parse(localStorage.getItem('pp_users'));
-            if (users.some(u => u.email === email)) {
-                alert('이미 가입된 이메일입니다.');
-                return;
-            }
-
-            users.push({ email, pw, name, role, assignedSlotId });
-            localStorage.setItem('pp_users', JSON.stringify(users));
-
-            let slotObj = members.find(m => m.id === assignedSlotId);
-            alert(`회원가입 성공! [직급: ${role} ${slotObj ? '/ 담당 조직도: ' + slotObj.name : ''}] 로그인 해주세요.`);
-            switchAuthTab('login');
-            document.getElementById('signupForm').reset();
-        }
-
-        function handleLogin(e) {
-            e.preventDefault();
-            const email = document.getElementById('loginEmail').value.trim();
-            const pw = document.getElementById('loginPw').value.trim();
-
-            let users = JSON.parse(localStorage.getItem('pp_users'));
-            let user = users.find(u => u.email === email && u.pw === pw);
-
-            if (!user) {
-                alert('이메일 또는 비밀번호가 올바르지 않습니다.');
-                return;
-            }
-
-            currentUser = user;
-            document.getElementById('authWrapper').classList.add('hidden');
-
-            if (user.role === '관리자') {
-                document.getElementById('adminDashboard').classList.remove('hidden');
-                renderAdminPanel();
-            } else if (user.role === '사장') {
-                document.getElementById('bossDashboard').classList.remove('hidden');
-                renderBossPanel();
-            } else {
-                let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-                let mySlot = members.find(m => m.id === user.assignedSlotId);
-                let slotNameDisplay = mySlot ? mySlot.name : '없음';
-
-                document.getElementById('workerDashboard').classList.remove('hidden');
-                document.getElementById('workerWelcomeTitle').innerText = `${user.name}님 환영합니다!`;
-                document.getElementById('workerRoleBadge').innerText = `직급: ${user.role} ${mySlot ? '(' + mySlot.name + ')' : ''}`;
-                document.getElementById('myAssignedSlotInfo').innerText = mySlot ? `📌 담당 조직도 슬롯: [${mySlot.name}] (${mySlot.role})` : '📌 배정된 전용 조직도 슬롯 없음 (일반 직원)';
-                updateWorkerUI();
-                renderOrgCharts();
-            }
-        }
-
-        function logout() {
-            currentUser = null;
-            document.getElementById('adminDashboard').classList.add('hidden');
-            document.getElementById('bossDashboard').classList.add('hidden');
-            document.getElementById('workerDashboard').classList.add('hidden');
-            document.getElementById('authWrapper').classList.remove('hidden');
-            document.getElementById('loginForm').reset();
-        }
-
-        // 관리자 패널
-        function generateCode() {
-            const role = document.getElementById('codeTargetRole').value;
-            const newCode = Math.random().toString(36).substring(2, 10).toUpperCase();
-            let codes = JSON.parse(localStorage.getItem('pp_codes'));
-            codes.push({ code: newCode, role });
-            localStorage.setItem('pp_codes', JSON.stringify(codes));
-            renderAdminPanel();
-            alert(`가입 코드 발급 완료: ${newCode} (${role})`);
-        }
-
-        function renderAdminPanel() {
-            let codes = JSON.parse(localStorage.getItem('pp_codes'));
-            let codeEl = document.getElementById('adminCodeList');
-            codeEl.innerHTML = codes.length ? '' : '<p class="text-xs text-zinc-500">발급된 일반 코드 없음</p>';
-            codes.forEach((c, idx) => {
-                codeEl.innerHTML += `<div class="flex justify-between items-center p-2 bg-[#170a1c] border border-pink-500/20 rounded-lg text-xs">
-                    <div><span class="text-pink-400 font-mono font-bold">${c.code}</span> <span class="text-zinc-400">(${c.role})</span></div>
-                    <button onclick="deleteCode(${idx})" class="text-zinc-500 hover:text-red-400">삭제</button>
-                </div>`;
+        // 탭 전환 기능
+        function switchTab(tabName) {
+            ['status', 'scan', 'alarm', 'stats'].forEach(t => {
+                document.getElementById(`view_${t}`).classList.add('hidden');
+                document.getElementById(`tabBtn_${t}`).className = "py-3 rounded-xl font-bold text-xs md:text-sm bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition";
             });
+            document.getElementById(`view_${tabName}`).classList.remove('hidden');
+            document.getElementById(`tabBtn_${tabName}`).className = "py-3 rounded-xl font-bold text-xs md:text-sm bg-red-600 text-white shadow-lg shadow-red-900/40 transition";
 
-            let requests = JSON.parse(localStorage.getItem('pp_kick_requests'));
-            let reqEl = document.getElementById('adminKickRequestsList');
-            reqEl.innerHTML = requests.length ? '' : '<p class="text-xs text-zinc-500">대기 중인 탈퇴 요청이 없습니다.</p>';
-            requests.forEach((req, idx) => {
-                reqEl.innerHTML += `<div class="p-3 bg-[#170a1c] border border-rose-500/30 rounded-xl text-xs space-y-2">
-                    <div><span class="font-bold text-white">${req.name}</span> (${req.role}, ${req.email})</div>
-                    <div class="flex gap-2">
-                        <button onclick="approveKick(${idx})" class="flex-1 py-1 bg-rose-600 hover:bg-rose-500 text-white rounded font-bold">최종 승인(탈퇴 처리)</button>
-                        <button onclick="rejectKick(${idx})" class="py-1 px-3 bg-zinc-800 text-zinc-300 rounded">거절</button>
-                    </div>
-                </div>`;
-            });
-
-            let users = JSON.parse(localStorage.getItem('pp_users'));
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            let userEl = document.getElementById('adminAllUsersList');
-            userEl.innerHTML = '';
-            users.forEach(u => {
-                let slot = members.find(m => m.id === u.assignedSlotId);
-                userEl.innerHTML += `<div class="flex justify-between items-center p-2.5 bg-[#170a1c] border border-pink-500/20 rounded-xl text-xs">
-                    <div><span class="font-bold text-white">${u.name}</span> <span class="text-pink-300">(${u.role} ${slot ? '/ 슬롯:' + slot.name : ''})</span></div>
-                    ${u.role !== '관리자' ? `<button onclick="forceDeleteUser('${u.email}')" class="text-rose-400 hover:underline font-bold">강제탈퇴(슬롯 비우기)</button>` : ''}
-                </div>`;
-            });
+            if (tabName === 'status') renderHouseList();
+            if (tabName === 'stats') renderStats();
         }
 
-        function deleteCode(idx) {
-            let codes = JSON.parse(localStorage.getItem('pp_codes'));
-            codes.splice(idx, 1);
-            localStorage.setItem('pp_codes', JSON.stringify(codes));
-            renderAdminPanel();
-        }
-
-        function forceDeleteUser(email) {
-            if (confirm('강제 탈퇴시키겠습니까? 해당 슬롯 코드가 다시 비워져 새 사람이 가입할 수 있게 됩니다.')) {
-                let users = JSON.parse(localStorage.getItem('pp_users'));
-                users = users.filter(u => u.email !== email);
-                localStorage.setItem('pp_users', JSON.stringify(users));
-                renderAdminPanel();
-                alert('강제탈퇴 완료되었습니다.');
-            }
-        }
-
-        function approveKick(idx) {
-            let requests = JSON.parse(localStorage.getItem('pp_kick_requests'));
-            let target = requests[idx];
-            let users = JSON.parse(localStorage.getItem('pp_users'));
-            users = users.filter(u => u.email !== target.email);
-            localStorage.setItem('pp_users', JSON.stringify(users));
-            requests.splice(idx, 1);
-            localStorage.setItem('pp_kick_requests', JSON.stringify(requests));
-            renderAdminPanel();
-            alert(`[${target.name}] 회원이 최종 승인되어 탈퇴 처리되었습니다. 해당 슬롯은 새 사람으로 교체 가능합니다.`);
-        }
-
-        function rejectKick(idx) {
-            let requests = JSON.parse(localStorage.getItem('pp_kick_requests'));
-            requests.splice(idx, 1);
-            localStorage.setItem('pp_kick_requests', JSON.stringify(requests));
-            renderAdminPanel();
-        }
-
-        // 사장 패널
-        function switchBossTab(tab) {
-            document.getElementById('bossTabOrg').classList.add('hidden');
-            document.getElementById('bossTabWorkers').classList.add('hidden');
-            document.getElementById('bossTabLogs').classList.add('hidden');
-            document.getElementById('btnBossOrg').className = "px-4 py-2 rounded-xl font-bold text-xs bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20";
-            document.getElementById('btnBossWorkers').className = "px-4 py-2 rounded-xl font-bold text-xs bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20";
-            document.getElementById('btnBossLogs').className = "px-4 py-2 rounded-xl font-bold text-xs bg-[#1a0f1c] text-pink-400/70 border border-pink-500/20";
-
-            if (tab === 'org') {
-                document.getElementById('bossTabOrg').classList.remove('hidden');
-                document.getElementById('btnBossOrg').className = "px-4 py-2 rounded-xl font-bold text-xs bg-pink-600 text-white";
-                renderBossMemberEdit();
-            } else if (tab === 'workers') {
-                document.getElementById('bossTabWorkers').classList.remove('hidden');
-                document.getElementById('btnBossWorkers').className = "px-4 py-2 rounded-xl font-bold text-xs bg-pink-600 text-white";
-                renderBossWorkersList();
-            } else {
-                document.getElementById('bossTabLogs').classList.remove('hidden');
-                document.getElementById('btnBossLogs').className = "px-4 py-2 rounded-xl font-bold text-xs bg-pink-600 text-white";
-                renderBossLogsTable();
-            }
-        }
-
-        function renderBossPanel() {
-            switchBossTab('org');
-        }
-
-        function renderBossMemberEdit() {
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            let container = document.getElementById('bossMemberEditContainer');
+        // 1번 기능: 주택 현황 및 5분 쿨타임 렌더링
+        function renderHouseList() {
+            let houses = getHouses();
+            let container = document.getElementById('houseListContainer');
             container.innerHTML = '';
-            members.forEach(m => {
-                container.innerHTML += `<div class="bg-[#170a1c] p-3 rounded-xl border border-pink-500/20 grid grid-cols-1 sm:grid-cols-3 gap-2 items-center">
-                    <div><span class="text-[10px] text-pink-400 font-bold block">${m.role} 이름 변경</span><input type="text" id="boss_name_${m.id}" value="${m.name}" class="w-full px-3 py-1.5 bg-[#09050b] border border-pink-500/30 rounded-lg text-white text-xs font-bold"></div>
-                    <div><span class="text-[10px] text-zinc-400 font-bold block">매칭 가입 코드</span><input type="text" id="boss_code_${m.id}" value="${m.code}" class="w-full px-3 py-1.5 bg-[#09050b] border border-pink-500/30 rounded-lg text-pink-300 font-mono text-xs"></div>
-                    <div class="text-[11px] text-zinc-400 text-right pt-4">탈퇴 후 새 이름으로 변경 가능</div>
-                </div>`;
-            });
-        }
+            let now = new Date().getTime();
 
-        function saveBossMemberSettings() {
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            members.forEach(m => {
-                let nameInput = document.getElementById(`boss_name_${m.id}`);
-                let codeInput = document.getElementById(`boss_code_${m.id}`);
-                if (nameInput && nameInput.value.trim()) m.name = nameInput.value.trim();
-                if (codeInput && codeInput.value.trim()) m.code = codeInput.value.trim();
-            });
-            localStorage.setItem('pp_custom_members', JSON.stringify(members));
-            alert('조직도 멤버 이름 및 슬롯 코드가 성공적으로 변경되었습니다!');
-            renderOrgCharts();
-        }
-
-        function renderBossWorkersList() {
-            let users = JSON.parse(localStorage.getItem('pp_users'));
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            let container = document.getElementById('bossWorkersList');
-            container.innerHTML = '';
-            let workers = users.filter(u => u.role !== '관리자' && u.role !== '사장');
-
-            if (!workers.length) {
-                container.innerHTML = '<p class="text-xs text-zinc-500 text-center py-2">등록된 직원이 없습니다.</p>';
-                return;
-            }
-
-            workers.forEach(w => {
-                let slot = members.find(m => m.id === w.assignedSlotId);
-                container.innerHTML += `<div class="flex justify-between items-center p-3 bg-[#170a1c] border border-pink-500/20 rounded-xl text-xs">
-                    <div><span class="font-bold text-white">${w.name}</span> <span class="text-pink-300">(${w.role} ${slot ? '/ 담당슬롯: ' + slot.name : ''})</span></div>
-                    <button onclick="proposeKick('${w.email}', '${w.name}', '${w.role}')" class="px-3 py-1 bg-rose-500/20 text-rose-300 hover:bg-rose-500 hover:text-white rounded transition">관리자에게 탈퇴 제안</button>
-                </div>`;
-            });
-        }
-
-        function proposeKick(email, name, role) {
-            if (confirm(`[${name}] 강제탈퇴를 관리자에게 제안하시겠습니까?`)) {
-                let requests = JSON.parse(localStorage.getItem('pp_kick_requests'));
-                if (requests.some(r => r.email === email)) {
-                    alert('이미 제안된 회원입니다.');
-                    return;
+            houses.forEach((h, index) => {
+                // 쿨타임 체크 (5분 = 300,000ms)
+                if (h.status === 'cooldown' && now >= h.cooldownEnd) {
+                    h.status = 'idle';
+                    h.worker = '';
                 }
-                requests.push({ email, name, role });
-                localStorage.setItem('pp_kick_requests', JSON.stringify(requests));
-                alert('관리자에게 전달되었습니다.');
-            }
-        }
 
-        function renderBossLogsTable() {
-            let logs = JSON.parse(localStorage.getItem('pp_attendance_logs') || '[]');
-            let tbody = document.getElementById('bossLogsTableBody');
-            tbody.innerHTML = logs.length ? '' : '<tr><td colspan="5" class="py-6 text-center text-zinc-500">근무 기록이 없습니다.</td></tr>';
-            logs.forEach(log => {
-                tbody.innerHTML += `<tr class="hover:bg-pink-500/5">
-                    <td class="py-2 px-2 text-zinc-300">${log.date}</td>
-                    <td class="py-2 px-2 font-bold text-white">${log.slotName} <span class="text-[10px] text-pink-400">(${log.userName})</span></td>
-                    <td class="py-2 px-2 text-emerald-400">${log.checkIn}</td>
-                    <td class="py-2 px-2 text-rose-400">${log.checkOut}</td>
-                    <td class="py-2 px-2 text-right font-bold text-pink-300">${log.duration}</td>
-                </tr>`;
-            });
-        }
+                let statusBadge = '';
+                let actionBtn = '';
 
-        // 공주 / 경호원 출퇴근 기능 (slotId 기준으로 정확히 연동)
-        function doWorkerCheckIn() {
-            if (!currentUser.assignedSlotId) {
-                alert('담당된 조직도 슬롯이 없습니다. 사장에게 문의하세요.');
-                return;
-            }
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            let mySlot = members.find(m => m.id === currentUser.assignedSlotId);
+                if (h.status === 'idle') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-300">🟢 대기 중 (비어있음)</span>`;
+                    actionBtn = `<button onclick="setHouseStatus(${index}, 'doing')" class="px-3 py-1.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-lg text-xs transition">내가 털기 시작</button>`;
+                } else if (h.status === 'doing') {
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-amber-500/20 text-amber-400 border border-amber-500/40 animate-pulse">🟡 진행 중 (${h.worker || '다른 사람'})</span>`;
+                    actionBtn = `<button onclick="finishHouse(${index})" class="px-3 py-1.5 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-lg text-xs transition">털이 완료 (5분 쿨타임)</button>`;
+                } else if (h.status === 'cooldown') {
+                    let remainSec = Math.ceil((h.cooldownEnd - now) / 1000);
+                    let min = Math.floor(remainSec / 60);
+                    let sec = remainSec % 60;
+                    statusBadge = `<span class="px-2.5 py-1 rounded-full text-[11px] font-bold bg-rose-500/20 text-rose-400 border border-rose-500/40">⏳ 쿨타임 (${min}분 ${sec}초)</span>`;
+                    actionBtn = `<button onclick="setHouseStatus(${index}, 'idle')" class="px-3 py-1.5 bg-zinc-800 text-zinc-400 hover:text-white font-bold rounded-lg text-xs transition">강제 초기화</button>`;
+                }
 
-            let active = JSON.parse(localStorage.getItem('pp_attendance_active'));
-            let now = new Date();
-
-            active[currentUser.assignedSlotId] = {
-                status: '출근',
-                timestamp: now.getTime(),
-                dateStr: now.toLocaleDateString(),
-                timeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                slotName: mySlot.name,
-                userName: currentUser.name
-            };
-            localStorage.setItem('pp_attendance_active', JSON.stringify(active));
-            updateWorkerUI();
-            renderOrgCharts();
-            alert(`[${mySlot.name}] 출근 처리가 완료되었습니다! 🟢`);
-        }
-
-        function doWorkerCheckOut() {
-            if (!currentUser.assignedSlotId) return;
-            let active = JSON.parse(localStorage.getItem('pp_attendance_active'));
-            let record = active[currentUser.assignedSlotId];
-
-            if (!record || record.status !== '출근') {
-                alert('현재 출근 상태가 아닙니다.');
-                return;
-            }
-
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            let mySlot = members.find(m => m.id === currentUser.assignedSlotId);
-
-            let now = new Date();
-            let diffMs = now - record.timestamp;
-            let diffHrs = Math.floor(diffMs / (1000 * 60 * 60));
-            let diffMins = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
-            let durationStr = `${diffHrs}시간 ${diffMins}분`;
-
-            let logs = JSON.parse(localStorage.getItem('pp_attendance_logs'));
-            logs.unshift({
-                date: record.dateStr,
-                slotName: mySlot.name,
-                userName: record.userName,
-                checkIn: record.timeStr,
-                checkOut: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
-                duration: durationStr
-            });
-            localStorage.setItem('pp_attendance_logs', JSON.stringify(logs));
-
-            delete active[currentUser.assignedSlotId];
-            localStorage.setItem('pp_attendance_active', JSON.stringify(active));
-            updateWorkerUI();
-            renderOrgCharts();
-            alert(`퇴근 완료! 총 근무시간: ${durationStr} 🔴`);
-        }
-
-        function updateWorkerUI() {
-            if (!currentUser.assignedSlotId) return;
-            let active = JSON.parse(localStorage.getItem('pp_attendance_active'));
-            let record = active[currentUser.assignedSlotId];
-            let statusEl = document.getElementById('myAttendanceStatus');
-            let logEl = document.getElementById('myTimeLog');
-
-            if (record && record.status === '출근') {
-                statusEl.innerHTML = `현재 근무 상태: <span class="text-emerald-400 font-bold">근무 중 🟢</span>`;
-                logEl.innerText = `출근 시각: ${record.timeStr}`;
-            } else {
-                statusEl.innerHTML = `현재 근무 상태: <span class="text-rose-400 font-bold">퇴근(미출근) 🔴</span>`;
-                logEl.innerText = '오늘 기록 대기 중';
-            }
-        }
-
-        // 실시간 조직도 렌더링 (slotId 기준, 이름이 변경되어도 완벽 매칭)
-        function renderOrgCharts() {
-            let members = JSON.parse(localStorage.getItem('pp_custom_members'));
-            let active = JSON.parse(localStorage.getItem('pp_attendance_active'));
-
-            let joker = members.find(m => m.id === 'joker');
-            let others = members.filter(m => m.id !== 'joker');
-
-            // JOKER 카드
-            let jokerRec = active[joker.id];
-            let jokerBadge = jokerRec && jokerRec.status === '출근'
-                ? '<span class="px-3 py-1 rounded-full text-xs font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">🟢 출근 중</span>'
-                : '<span class="px-3 py-1 rounded-full text-xs font-bold bg-zinc-800 text-zinc-400 border border-zinc-700">🔴 퇴근</span>';
-
-            document.getElementById('workerJokerContainer').innerHTML = `
-                <div class="w-full max-w-sm bg-gradient-to-b from-[#25102a] to-[#130717] border-2 border-pink-500 rounded-2xl p-4 text-center neon-glow relative">
-                    <div class="absolute top-2 right-3 text-[10px] px-2 py-0.5 bg-pink-500 text-white rounded-full font-bold">JOKER</div>
-                    <div class="text-xl mb-1">${joker.icon}</div>
-                    <h4 class="text-lg font-bold text-white">${joker.name}</h4>
-                    <p class="text-[10px] text-pink-400 font-mono">코드: ${joker.code}</p>
-                    <div class="mt-2">${jokerBadge}</div>
-                </div>
-            `;
-
-            // 하위 멤버 그리드
-            let gridHtml = '';
-            others.forEach(m => {
-                let rec = active[m.id];
-                let badge = rec && rec.status === '출근'
-                    ? '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-emerald-500/20 text-emerald-400 border border-emerald-500/40">🟢 출근</span>'
-                    : '<span class="px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-zinc-800 text-zinc-400">🔴 퇴근</span>';
-
-                gridHtml += `
-                    <div class="bg-[#170a1c] border border-pink-500/30 rounded-2xl p-4 text-center">
-                        <div class="flex justify-between items-center mb-1">
-                            <span class="text-[10px] px-2 py-0.5 rounded font-bold bg-pink-500/10 text-pink-300">${m.role}</span>
+                container.innerHTML += `
+                    <div class="bg-[#0c0404] border border-red-500/20 rounded-xl p-4 space-y-3 flex flex-col justify-between">
+                        <div class="flex justify-between items-start">
+                            <div>
+                                <h3 class="font-bold text-white text-sm">${h.name}</h3>
+                                <p class="text-[10px] text-zinc-500 mt-0.5">보안 등급: 일반 주택</p>
+                            </div>
+                            <div>${statusBadge}</div>
                         </div>
-                        <div class="text-base mb-1">${m.icon}</div>
-                        <h4 class="font-bold text-white text-base">${m.name}</h4>
-                        <p class="text-[10px] text-pink-400 font-mono mt-0.5">코드: ${m.code}</p>
-                        <div class="mt-3">${badge}</div>
+                        <div class="flex justify-between items-center pt-2 border-t border-red-500/10">
+                            <span class="text-xs text-zinc-400">현장 상태</span>
+                            <div>${actionBtn}</div>
+                        </div>
                     </div>
                 `;
             });
-            document.getElementById('workerGridContainer').innerHTML = gridHtml;
+            saveHouses(houses);
+        }
+
+        function setHouseStatus(index, status) {
+            let houses = getHouses();
+            houses[index].status = status;
+            houses[index].worker = status === 'doing' ? '나 (플레이어)' : '';
+            saveHouses(houses);
+            renderHouseList();
+        }
+
+        function finishHouse(index) {
+            let houses = getHouses();
+            houses[index].status = 'cooldown';
+            houses[index].worker = '';
+            houses[index].cooldownEnd = new Date().getTime() + (5 * 60 * 1000); // 5분 쿨타임
+            saveHouses(houses);
+            renderHouseList();
+            alert('빈집털이가 완료되었습니다! 5분간 쿨타임이 적용됩니다.');
+        }
+
+        // 주택 현황 쿨타임 실시간 갱신 루프
+        setInterval(() => {
+            if (!document.getElementById('view_status').classList.contains('hidden')) {
+                renderHouseList();
+            }
+        }, 1000);
+
+        // 2번 기능: 스크린샷 업로드 및 정산 반영
+        function handleImageUpload(e) {
+            const file = e.target.files[0];
+            if (file) {
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('imagePreview').src = evt.target.result;
+                    document.getElementById('previewContainer').classList.remove('hidden');
+                };
+                reader.readAsDataURL(file);
+            }
+        }
+
+        function submitLootResult() {
+            let house = document.getElementById('lootHouseSelect').value;
+            let cash = parseInt(document.getElementById('lootCash').value) || 0;
+            let count = parseInt(document.getElementById('lootItemsCount').value) || 0;
+            let itemNames = document.getElementById('lootItemNames').value.trim();
+
+            let logs = getLogs();
+            let now = new Date();
+            
+            logs.unshift({
+                timeStr: now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' }),
+                dateStr: now.toLocaleDateString(),
+                fullDate: now.toISOString(),
+                house: house,
+                cash: cash,
+                count: count,
+                items: itemNames
+            });
+
+            saveLogs(logs);
+            alert('빈집털이 물품 및 수익 정산이 완료되었습니다! 통계에 반영되었습니다.');
+            switchTab('stats');
+        }
+
+        // 4번 기능: 15분 알람 타이머
+        let alarmInterval = null;
+        let targetAlarmTime = 0;
+
+        function startFifteenMinAlarm() {
+            targetAlarmTime = new Date().getTime() + (15 * 60 * 1000);
+            document.getElementById('alarmStatusText').innerText = '🚨 다음 빈집털이까지 대기 중...';
+            
+            if (alarmInterval) clearInterval(alarmInterval);
+
+            alarmInterval = setInterval(() => {
+                let now = new Date().getTime();
+                let remain = targetAlarmTime - now;
+
+                if (remain <= 0) {
+                    clearInterval(alarmInterval);
+                    document.getElementById('alarmDisplay').innerText = '00:00';
+                    document.getElementById('alarmStatusText').innerText = '🎉 15분이 경과했습니다! 다시 빈집을 털러 가세요!';
+                    alert('⏰ 15분 대기 시간이 종료되었습니다! 새로운 빈집을 털 수 있습니다.');
+                    return;
+                }
+
+                let min = Math.floor(remain / (1000 * 60));
+                let sec = Math.floor((remain % (1000 * 60)) / 1000);
+                document.getElementById('alarmDisplay').innerText = `${String(min).padStart(2, '0')}:${String(sec).padStart(2, '0')}`;
+            }, 1000);
+        }
+
+        function resetAlarm() {
+            if (alarmInterval) clearInterval(alarmInterval);
+            document.getElementById('alarmDisplay').innerText = '00:00';
+            document.getElementById('alarmStatusText').innerText = '현재 대기 중인 알람이 없습니다.';
+        }
+
+        // 5번 기능: 수익 및 아이템 통계표 계산
+        function renderStats() {
+            let logs = getLogs();
+            let todayStr = new Date().toLocaleDateString();
+            let currentMonthStr = new Date().toISOString().slice(0, 7); // YYYY-MM
+
+            let todayEarnings = 0;
+            let monthEarnings = 0;
+            let todayItemCount = 0;
+
+            logs.forEach(log => {
+                let logMonth = log.fullDate ? log.fullDate.slice(0, 7) : '';
+                if (log.dateStr === todayStr) {
+                    todayEarnings += log.cash;
+                    todayItemCount += log.count;
+                }
+                if (logMonth === currentMonthStr) {
+                    monthEarnings += log.cash;
+                }
+            });
+
+            document.getElementById('statTodayEarnings').innerText = `$${todayEarnings.toLocaleString()}`;
+            document.getElementById('statMonthEarnings').innerText = `$${monthEarnings.toLocaleString()}`;
+            document.getElementById('statTodayItemCount').innerText = `${todayItemCount}개`;
+
+            let tbody = document.getElementById('statsTableBody');
+            tbody.innerHTML = '';
+
+            if (logs.length === 0) {
+                tbody.innerHTML = `<tr><td colspan="4" class="py-6 text-center text-zinc-500">아직 정산된 빈집털이 기록이 없습니다.</td></tr>`;
+                return;
+            }
+
+            logs.forEach(log => {
+                tbody.innerHTML += `
+                    <tr class="hover:bg-red-500/5 transition">
+                        <td class="py-2.5 px-2 text-zinc-400">${log.dateStr} ${log.timeStr}</td>
+                        <td class="py-2.5 px-2 font-bold text-white">${log.house}</td>
+                        <td class="py-2.5 px-2 text-zinc-300">${log.items} <span class="text-[10px] text-red-400">(${log.count}개)</span></td>
+                        <td class="py-2.5 px-2 text-right font-bold text-emerald-400">+$${log.cash.toLocaleString()}</td>
+                    </tr>
+                `;
+            });
+        }
+
+        function clearStats() {
+            if (confirm('모든 빈집털이 정산 기록을 초기화하시겠습니까?')) {
+                localStorage.removeItem('rob_logs');
+                renderStats();
+            }
         }
     </script>
 </body>
