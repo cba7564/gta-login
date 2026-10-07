@@ -221,7 +221,7 @@
             </div>
         </div>
 
-        <!-- 탭 5: 내 수익 통계표 (일별 / 월별 분리 및 파일 다운로드 제공) -->
+        <!-- 탭 5: 내 수익 통계표 (일별 / 월별 분리) -->
         <div id="view_stats" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-6">
             <div class="border-b border-red-500/20 pb-3 flex justify-between items-center">
                 <h2 class="text-base font-bold text-red-400">📊 내 수익 및 획득 물품 통계표</h2>
@@ -321,19 +321,19 @@
         ];
 
         function getItems() {
-            let data = localStorage.getItem('rob_items_v21');
+            let data = localStorage.getItem('rob_items_v22');
             return data ? JSON.parse(data) : defaultItems;
         }
         function saveItems(items) {
-            localStorage.setItem('rob_items_v21', JSON.stringify(items));
+            localStorage.setItem('rob_items_v22', JSON.stringify(items));
         }
 
         function getHouses() {
-            let data = localStorage.getItem('rob_shared_houses_v21');
+            let data = localStorage.getItem('rob_shared_houses_v22');
             return data ? JSON.parse(data) : defaultHouses;
         }
         function saveHouses(houses) {
-            localStorage.setItem('rob_shared_houses_v21', JSON.stringify(houses));
+            localStorage.setItem('rob_shared_houses_v22', JSON.stringify(houses));
         }
 
         function getLogs() {
@@ -356,7 +356,8 @@
             localStorage.setItem('rob_invite_codes', JSON.stringify(codes));
         }
 
-        let currentSession = JSON.parse(localStorage.getItem('rob_session') || 'null');
+        // 세션 저장을 sessionStorage로 변경하여 사이트 창/탭을 닫으면 자동 로그아웃 처리
+        let currentSession = JSON.parse(sessionStorage.getItem('rob_session') || 'null');
 
         window.onload = function() {
             let savedApiKey = localStorage.getItem('gemini_api_key');
@@ -384,7 +385,7 @@
 
             if (code === 'abc7564') {
                 currentSession = { role: 'admin', name: '최고관리자' };
-                localStorage.setItem('rob_session', JSON.stringify(currentSession));
+                sessionStorage.setItem('rob_session', JSON.stringify(currentSession));
                 showMainApp();
                 alert('관리자로 로그인되었습니다.');
                 return;
@@ -395,7 +396,7 @@
 
             if (matched) {
                 currentSession = { role: 'user', name: matched.note || '조직원' };
-                localStorage.setItem('rob_session', JSON.stringify(currentSession));
+                sessionStorage.setItem('rob_session', JSON.stringify(currentSession));
                 showMainApp();
                 alert(`환영합니다! [${matched.note}] 권한으로 입장했습니다.`);
             } else {
@@ -404,7 +405,7 @@
         }
 
         function logout() {
-            localStorage.removeItem('rob_session');
+            sessionStorage.removeItem('rob_session');
             currentSession = null;
             document.getElementById('mainAppView').classList.add('hidden');
             document.getElementById('authGateView').classList.remove('hidden');
@@ -447,7 +448,6 @@
             switchTab('status');
         }
 
-        // 유저 강제 탈퇴 및 코드 관리 기능
         function createInviteCode() {
             let code = document.getElementById('newInviteCode').value.trim();
             let note = document.getElementById('newInviteNote').value.trim() || '조직원';
@@ -464,6 +464,7 @@
             alert(`[${code}] (${note}) 코드가 생성되었습니다.`);
         }
 
+        // 유저 강제 탈퇴 기능
         function kickUser(index) {
             if (confirm('이 유저(코드)를 강제 탈퇴시키겠습니까? 해당 코드로 더 이상 접속할 수 없습니다.')) {
                 let codes = getInviteCodes();
@@ -479,10 +480,12 @@
             container.innerHTML = '';
             codes.forEach((c, idx) => {
                 container.innerHTML += `
-                    <div class="flex items-center gap-2 bg-[#160808] px-3 py-1.5 rounded-lg border border-red-500/20 text-xs font-mono">
-                        <span class="text-red-400 font-bold">${c.code}</span>
-                        <span class="text-zinc-400">(${c.note})</span>
-                        <button onclick="kickUser(${idx})" class="px-2 py-0.5 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded transition ml-1">강제 탈퇴</button>
+                    <div class="flex items-center justify-between bg-[#160808] px-3 py-2 rounded-lg border border-red-500/20 text-xs font-mono">
+                        <div>
+                            <span class="text-red-400 font-bold">${c.code}</span>
+                            <span class="text-zinc-300 ml-2">(${c.note})</span>
+                        </div>
+                        <button onclick="kickUser(${idx})" class="px-2 py-1 bg-red-500/20 text-red-400 hover:bg-red-500 hover:text-white rounded transition">강제 탈퇴</button>
                     </div>
                 `;
             });
@@ -502,7 +505,6 @@
             if (tabName === 'stats') renderStats();
         }
 
-        // 통계 하위 탭 전환 (일별 / 월별)
         function switchStatsSubTab(subTab) {
             ['daily', 'monthly'].forEach(t => {
                 document.getElementById(`statsView_${t}`).classList.add('hidden');
@@ -813,7 +815,6 @@
             });
         }
 
-        // 🤖 Gemini AI 비전 API 연동 분석 함수
         async function runGeminiVisionAnalysis() {
             let apiKey = localStorage.getItem('gemini_api_key');
             const statusEl = document.getElementById('aiStatusText');
@@ -974,7 +975,6 @@ ${itemNames}
             switchTab('stats');
         }
 
-        // 통계 렌더링 (일별 / 월별 분리)
         function renderStats() {
             let logs = getLogs();
             let todayStr = new Date().toLocaleDateString();
@@ -998,7 +998,6 @@ ${itemNames}
                 }
             });
 
-            // 일별 UI 반영
             document.getElementById('statTodayEarnings').innerText = `${todayEarnings.toLocaleString()}원`;
             document.getElementById('statTodayItemCount').innerText = `${todayItemCount}개`;
             let tbodyDaily = document.getElementById('statsTableBodyDaily');
@@ -1014,7 +1013,6 @@ ${itemNames}
                 `;
             });
 
-            // 월별 UI 반영
             document.getElementById('statMonthEarnings').innerText = `${monthEarnings.toLocaleString()}원`;
             document.getElementById('statMonthItemCount').innerText = `${monthItemCount}개`;
             let tbodyMonthly = document.getElementById('statsTableBodyMonthly');
@@ -1031,7 +1029,6 @@ ${itemNames}
             });
         }
 
-        // 파일 내보내기 (메모장 TXT / 엑셀 CSV)
         function exportData(type, format) {
             let logs = getLogs();
             let todayStr = new Date().toLocaleDateString();
@@ -1061,7 +1058,7 @@ ${itemNames}
                 content += `========================================\n`;
                 filename = `빈집털이_${type}_통계_${currentSession.name}.txt`;
             } else if (format === 'csv') {
-                content = '\uFEFF날짜,시각,장소,상세내역,수익금\n'; // UTF-8 BOM
+                content = '\uFEFF날짜,시각,장소,상세내역,수익금\n';
                 targetLogs.forEach(l => {
                     content += `"${l.dateStr}","${l.timeStr}","${l.house}","${l.items.replace(/"/g, '""')}","${l.cash}"\n`;
                 });
