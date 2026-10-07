@@ -144,7 +144,7 @@
                 </div>
             </div>
 
-            <!-- 하단: 장바구니 스타일 가독성 극대화 리스트 & 실시간 계산 -->
+            <!-- 하단: 장바구니 리스트 & 실시간 계산 -->
             <div class="space-y-4 bg-[#0c0404] p-5 rounded-2xl border border-red-500/20">
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div class="space-y-1">
@@ -162,7 +162,6 @@
                         <h3 class="text-xs font-bold text-red-300 uppercase tracking-wider">📦 획득 물품 수량 확인 및 장바구니 목록</h3>
                         <span class="text-[11px] text-zinc-400">수량을 직접 수정할 수 있습니다</span>
                     </div>
-                    <!-- 장바구니 카드 리스트 -->
                     <div id="cartItemsContainer" class="grid grid-cols-1 sm:grid-cols-2 gap-2.5 max-h-64 overflow-y-auto pr-1"></div>
                 </div>
 
@@ -265,27 +264,27 @@
         ];
 
         function getItems() {
-            let data = localStorage.getItem('rob_items_v10');
+            let data = localStorage.getItem('rob_items_v11');
             return data ? JSON.parse(data) : defaultItems;
         }
         function saveItems(items) {
-            localStorage.setItem('rob_items_v10', JSON.stringify(items));
+            localStorage.setItem('rob_items_v11', JSON.stringify(items));
         }
 
         function getHouses() {
-            let data = localStorage.getItem('rob_houses_v10');
+            let data = localStorage.getItem('rob_houses_v11');
             return data ? JSON.parse(data) : defaultHouses;
         }
         function saveHouses(houses) {
-            localStorage.setItem('rob_houses_v10', JSON.stringify(houses));
+            localStorage.setItem('rob_houses_v11', JSON.stringify(houses));
         }
 
         function getLogs() {
-            let data = localStorage.getItem('rob_logs_v10');
+            let data = localStorage.getItem('rob_logs_v11');
             return data ? JSON.parse(data) : [];
         }
         function saveLogs(logs) {
-            localStorage.setItem('rob_logs_v10', JSON.stringify(logs));
+            localStorage.setItem('rob_logs_v11', JSON.stringify(logs));
         }
 
         function getInviteCodes() {
@@ -636,7 +635,7 @@
                 }
             });
 
-            document.getElementById('liveItemCount').innerText = `${totalCount}개`;
+            document.getElementById('liveItemCount',).innerText = `${totalCount}개`;
             document.getElementById('liveTotalEarnings').innerText = `${totalCash.toLocaleString()}원`;
         }
 
@@ -652,7 +651,7 @@
             }
         }
 
-        // 🤖 강화된 AI OCR 이미지 이진화 및 정밀 수량 파싱 로직
+        // 🤖 한글+영어 복합 인식 모델('kor+eng') 적용 및 정밀 파싱
         async function runAiOcrAnalysis() {
             const previewImg = document.getElementById('imagePreview');
             const statusEl = document.getElementById('aiStatusText');
@@ -662,25 +661,24 @@
                 return;
             }
 
-            statusEl.innerText = '🤖 AI가 스크린샷의 픽셀을 정밀 분석 중입니다...';
+            statusEl.innerText = '🤖 AI가 한글/영문 텍스트를 분석 중입니다...';
 
             try {
-                // 고대비 이진화 및 2배 확대 전처리 적용
                 const processedImageUrl = await preprocessImageForOcr(previewImg);
 
+                // 'kor+eng' 언어팩 사용으로 한글 물품명 정확 인식 복구
                 const { data: { text } } = await Tesseract.recognize(
                     processedImageUrl,
-                    'eng', // 숫자와 영어/특수문자(x) 조합 인식을 위해 영문 우선 인식 모드 적용
+                    'kor+eng',
                     { logger: m => console.log(m) }
                 );
 
-                console.log("정밀 OCR 인식 결과:", text);
+                console.log("정밀 kor+eng OCR 인식 결과:", text);
 
                 let items = getItems();
                 let matchedCount = 0;
-                let cleanText = text.replace(/\s+/g, ' ').toLowerCase();
 
-                // 스크린샷 내 현금 인식 시도 (₩ 또는 W 뒤의 숫자)
+                // 현금 인식 (₩ 또는 W 뒤의 숫자)
                 let cashMatch = text.match(/[W₩]\s*([0-9,]+)/i);
                 if (cashMatch && cashMatch[1]) {
                     let parsedCash = parseInt(cashMatch[1].replace(/,/g, ''), 10);
@@ -693,15 +691,12 @@
                     let inputEl = document.getElementById(`cart_qty_${idx}`);
                     if (!inputEl) return;
 
-                    // 한글 이름을 영문으로 매칭하기 힘들므로, 기본 제공 물품들의 영문 키워드나 부분 문자열 검사 수행
                     let targetName = it.name.trim();
                     let index = text.indexOf(targetName);
 
                     if (index !== -1) {
                         let qty = 1;
                         let sub = text.substring(index + targetName.length, index + targetName.length + 15);
-                        
-                        // x1, x2, x3 등에서 숫자 추출 ('x' 또는 'X' 또는 번호 식별)
                         let match = sub.match(/[xX]\s*([0-9]+)/) || sub.match(/([0-9]+)/);
                         if (match && match[1]) {
                             let parsed = parseInt(match[1], 10);
@@ -715,8 +710,8 @@
                 });
 
                 calculateLiveTotal();
-                statusEl.innerText = `✨ AI 분석 완료! 총 ${matchedCount}개의 물품 수량을 자동 채웠습니다.`;
-                alert(`AI 분석 완료! 총 ${matchedCount}개의 물품을 인식했습니다. 수량을 확인하고 [최종 수익 정산]을 눌러주세요.`);
+                statusEl.innerText = `✨ AI 분석 완료! 총 ${matchedCount}개의 물품을 인식했습니다.`;
+                alert(`AI 분석 완료! 총 ${matchedCount}개의 물품을 인식하여 장바구니에 채웠습니다.`);
             } catch (err) {
                 console.error(err);
                 statusEl.innerText = '❌ 분석 실패. 수동으로 입력해주세요.';
@@ -724,30 +719,25 @@
             }
         }
 
-        // 게임 스크린샷 인식률을 극대화하기 위한 고대비 이진화 & 2배 확대 전처리 함수
+        // 그레이스케일 및 명암비 향상 전처리 함수
         function preprocessImageForOcr(imgElement) {
             return new Promise((resolve) => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                const scale = 2; // 2배 확대
+                const scale = 3; // 3배 확대
                 canvas.width = (imgElement.naturalWidth || imgElement.width) * scale;
                 canvas.height = (imgElement.naturalHeight || imgElement.height) * scale;
 
-                ctx.imageSmoothingEnabled = false;
+                ctx.imageSmoothingEnabled = true;
                 ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
 
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
                 const data = imgData.data;
 
-                // 흑백 이진화 (배경은 흰색, 글씨는 검은색으로 고대비 변환)
                 for (let i = 0; i < data.length; i += 4) {
-                    let r = data[i];
-                    let g = data[i + 1];
-                    let b = data[i + 2];
-                    let luminance = 0.299 * r + 0.587 * g + 0.114 * b;
-                    
-                    // 밝은 글씨(흰색 계열)는 검은색(0)으로, 어두운 배경은 흰색(255)으로 변환
-                    let val = luminance > 130 ? 0 : 255;
+                    let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
+                    // 명암비를 높여 흰색 글씨와 어두운 배경 구분 강화
+                    let val = avg > 120 ? 255 : 0;
                     data[i]     = val;
                     data[i + 1] = val;
                     data[i + 2] = val;
@@ -870,7 +860,7 @@
 
         function clearStats() {
             if (confirm('통계 기록을 초기화하시겠습니까?')) {
-                localStorage.removeItem('rob_logs_v10');
+                localStorage.removeItem('rob_logs_v11');
                 renderStats();
             }
         }
