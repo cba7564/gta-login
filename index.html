@@ -21,27 +21,23 @@
 </head>
 <body class="min-h-screen bg-[#070505] text-white flex flex-col items-center p-4 md:p-8">
     
-    <!-- 0. 로그인 (접근 인증) 화면 -->
+    <!-- 0. 로그인 (접근 인증) 화면 - 관리자 코드 노출 제거됨 -->
     <div id="authGateView" class="w-full max-w-md mx-auto my-auto bg-[#120707] border border-red-500/30 rounded-2xl p-8 red-glow space-y-6 text-center mt-20">
         <div class="space-y-2">
             <h1 class="text-3xl font-extrabold text-red-500 tracking-widest red-text-glow">빈집털이 시스템</h1>
             <p class="text-xs text-zinc-400">접근 코드를 입력하여 입실하세요.</p>
         </div>
         <div class="space-y-3">
-            <input type="text" id="accessCodeInput" placeholder="접근 코드 입력 (관리자: abc7564)" class="w-full px-4 py-3 bg-[#160808] border border-red-500/40 rounded-xl text-white text-sm text-center focus:outline-none focus:border-red-500 font-mono">
+            <input type="password" id="accessCodeInput" placeholder="접근 코드 입력" class="w-full px-4 py-3 bg-[#160808] border border-red-500/40 rounded-xl text-white text-sm text-center focus:outline-none focus:border-red-500 font-mono">
             <button onclick="tryLogin()" class="w-full py-3.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-sm transition shadow-lg shadow-red-900/40">
                 입장하기
             </button>
         </div>
-        <div class="text-[11px] text-zinc-500 pt-2 border-t border-red-500/10">
-            관리자 코드: <span class="text-red-400 font-mono font-bold">abc7564</span> (비밀번호 없음)
-        </div>
     </div>
 
-    <!-- 1. 메인 앱 화면 (로그인 후 표시) -->
+    <!-- 1. 메인 앱 화면 -->
     <div id="mainAppView" class="w-full max-w-4xl mx-auto space-y-6 hidden">
         
-        <!-- 타이틀 및 로그아웃 버튼 -->
         <div class="flex justify-between items-center border-b border-red-500/20 py-4">
             <div>
                 <h1 class="text-2xl md:text-4xl font-extrabold text-red-500 tracking-widest red-text-glow">
@@ -54,7 +50,7 @@
             </button>
         </div>
 
-        <!-- 관리자 전용: 가입 코드 발급 패널 (관리자로 로그인했을 때만 표시) -->
+        <!-- 관리자 전용 가입 코드 발급 패널 -->
         <div id="adminCodePanel" class="bg-[#120707] border border-red-500/30 rounded-2xl p-5 red-glow space-y-4 hidden">
             <h2 class="text-sm font-bold text-red-400">🔑 팀원용 접근 코드 직접 발급 (관리자 전용)</h2>
             <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -74,9 +70,8 @@
             <button onclick="switchTab('stats')" id="tabBtn_stats" class="py-3 rounded-xl font-bold text-xs bg-[#140a0a] text-red-400/70 border border-red-500/20 hover:text-white transition col-span-2 sm:col-span-1">📊 수익 통계</button>
         </div>
 
-        <!-- 탭 1: 주택 현황 (관리자만 추가 가능) -->
+        <!-- 탭 1: 주택 현황 -->
         <div id="view_status" class="space-y-6">
-            <!-- 관리자 전용 주택 추가 박스 -->
             <div id="adminHouseAddBox" class="bg-[#120707] border border-red-500/30 rounded-2xl p-5 red-glow space-y-4 hidden">
                 <h2 class="text-sm font-bold text-red-400">➕ 새로운 주택 및 고정 수입 등록 (관리자 전용)</h2>
                 <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
@@ -95,20 +90,17 @@
             </div>
         </div>
 
-        <!-- 탭 2: 물품 단가 관리 (관리자만 추가/삭제 가능) -->
+        <!-- 탭 2: 물품 단가 관리 -->
         <div id="view_items" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5">
             <div class="border-b border-red-500/20 pb-3">
                 <h2 class="text-base font-bold text-red-400">📦 빈집털이 획득 물품 단가 관리</h2>
                 <p id="itemSubText" class="text-xs text-zinc-400 mt-0.5">물품 단가 목록입니다.</p>
             </div>
-
-            <!-- 관리자 전용 물품 추가 박스 -->
             <div id="adminItemAddBox" class="bg-[#0c0404] p-4 rounded-xl border border-red-500/20 grid grid-cols-1 sm:grid-cols-3 gap-3 hidden">
                 <input type="text" id="newItemName" placeholder="새 물품 이름" class="px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500">
                 <input type="number" id="newItemPrice" placeholder="개당 가격 (원)" class="px-3 py-2.5 bg-[#160808] border border-red-500/30 rounded-xl text-white text-xs focus:outline-none focus:border-red-500">
                 <button onclick="addNewItem()" class="py-2.5 bg-red-600 hover:bg-red-500 text-white font-bold rounded-xl text-xs transition shadow-md">새 물품 추가</button>
             </div>
-
             <div class="overflow-x-auto max-h-72 overflow-y-auto">
                 <table class="w-full text-left text-xs">
                     <thead>
@@ -127,7 +119,7 @@
         <div id="view_scan" class="bg-[#120707] border border-red-500/30 rounded-2xl p-6 red-glow hidden space-y-5">
             <div class="border-b border-red-500/20 pb-3">
                 <h2 class="text-base font-bold text-red-400">📸 AI 스크린샷 자동 인식 및 정산</h2>
-                <p class="text-xs text-zinc-400 mt-0.5">스크린샷을 올리고 [AI 자동 분석]을 누르면 수량이 자동 입력됩니다.</p>
+                <p class="text-xs text-zinc-400 mt-0.5">스크린샷을 업로드하고 [AI 자동 분석]을 누르면 모든 물품의 수량이 자동 입력됩니다.</p>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
@@ -248,27 +240,27 @@
         ];
 
         function getItems() {
-            let data = localStorage.getItem('rob_items_v6');
+            let data = localStorage.getItem('rob_items_v8');
             return data ? JSON.parse(data) : defaultItems;
         }
         function saveItems(items) {
-            localStorage.setItem('rob_items_v6', JSON.stringify(items));
+            localStorage.setItem('rob_items_v8', JSON.stringify(items));
         }
 
         function getHouses() {
-            let data = localStorage.getItem('rob_houses_v6');
+            let data = localStorage.getItem('rob_houses_v8');
             return data ? JSON.parse(data) : defaultHouses;
         }
         function saveHouses(houses) {
-            localStorage.setItem('rob_houses_v6', JSON.stringify(houses));
+            localStorage.setItem('rob_houses_v8', JSON.stringify(houses));
         }
 
         function getLogs() {
-            let data = localStorage.getItem('rob_logs_v6');
+            let data = localStorage.getItem('rob_logs_v8');
             return data ? JSON.parse(data) : [];
         }
         function saveLogs(logs) {
-            localStorage.setItem('rob_logs_v6', JSON.stringify(logs));
+            localStorage.setItem('rob_logs_v8', JSON.stringify(logs));
         }
 
         function getInviteCodes() {
@@ -279,7 +271,6 @@
             localStorage.setItem('rob_invite_codes', JSON.stringify(codes));
         }
 
-        // 로그인 인증 체크 및 처리
         let currentSession = JSON.parse(localStorage.getItem('rob_session') || 'null');
 
         window.onload = function() {
@@ -298,15 +289,13 @@
             }
 
             if (code === 'abc7564') {
-                // 관리자 로그인
                 currentSession = { role: 'admin', name: '최고관리자' };
                 localStorage.setItem('rob_session', JSON.stringify(currentSession));
                 showMainApp();
-                alert('관리자(`abc7564`)로 로그인되었습니다.');
+                alert('관리자로 로그인되었습니다.');
                 return;
             }
 
-            // 일반 팀원 코드 확인
             let validCodes = getInviteCodes();
             let matched = validCodes.find(c => c.code === code);
 
@@ -361,25 +350,16 @@
             switchTab('status');
         }
 
-        // 관리자용 코드 발급 기능
         function createInviteCode() {
             let code = document.getElementById('newInviteCode').value.trim();
             let note = document.getElementById('newInviteNote').value.trim() || '조직원';
-
-            if (!code) {
-                alert('발급할 코드를 입력해주세요.');
-                return;
-            }
+            if (!code) { alert('발급할 코드를 입력해주세요.'); return; }
 
             let codes = getInviteCodes();
-            if (codes.some(c => c.code === code)) {
-                alert('이미 존재하는 코드입니다.');
-                return;
-            }
+            if (codes.some(c => c.code === code)) { alert('이미 존재하는 코드입니다.'); return; }
 
             codes.push({ code, note });
             saveInviteCodes(codes);
-
             document.getElementById('newInviteCode').value = '';
             document.getElementById('newInviteNote').value = '';
             renderInviteCodesList();
@@ -410,7 +390,6 @@
             });
         }
 
-        // 탭 전환
         function switchTab(tabName) {
             ['status', 'items', 'scan', 'alarm', 'stats'].forEach(t => {
                 document.getElementById(`view_${t}`).classList.add('hidden');
@@ -425,7 +404,6 @@
             if (tabName === 'stats') renderStats();
         }
 
-        // 물품 추가 (관리자 전용)
         function addNewItem() {
             if (currentSession.role !== 'admin') { alert('관리자만 추가할 수 있습니다.'); return; }
             let name = document.getElementById('newItemName').value.trim();
@@ -435,7 +413,6 @@
             let items = getItems();
             items.push({ id: 'it_' + new Date().getTime(), name: name, price: price });
             saveItems(items);
-
             document.getElementById('newItemName').value = '';
             document.getElementById('newItemPrice').value = '';
             renderItemsTable();
@@ -468,7 +445,6 @@
             });
         }
 
-        // 주택 추가 (관리자 전용)
         function addNewHouse() {
             if (currentSession.role !== 'admin') { alert('관리자만 추가할 수 있습니다.'); return; }
             let name = document.getElementById('newHouseName').value.trim();
@@ -478,7 +454,6 @@
             let houses = getHouses();
             houses.push({ id: 'h_' + new Date().getTime(), name: name, fixedIncome: income, status: 'idle', worker: '', cooldownEnd: 0 });
             saveHouses(houses);
-
             document.getElementById('newHouseName').value = '';
             document.getElementById('newHouseIncome').value = '';
             renderHouseList();
@@ -635,7 +610,6 @@
             }
         }
 
-        // AI OCR 분석
         async function runAiOcrAnalysis() {
             const previewImg = document.getElementById('imagePreview');
             const statusEl = document.getElementById('aiStatusText');
@@ -645,26 +619,62 @@
                 return;
             }
 
-            statusEl.innerText = '🤖 AI가 스크린샷을 분석 중입니다...';
+            statusEl.innerText = '🤖 AI가 게임 UI를 분석 중입니다...';
+
             try {
-                const { data: { text } } = await Tesseract.recognize(previewImg.src, 'kor+eng');
+                const processedImageUrl = await invertImageColors(previewImg);
+                const { data: { text } } = await Tesseract.recognize(processedImageUrl, 'kor+eng');
+
                 let items = getItems();
                 let matchedCount = 0;
+                let cleanText = text.replace(/\s+/g, ' ');
 
                 items.forEach((it, idx) => {
                     let inputEl = document.getElementById(`cart_qty_${idx}`);
                     if (!inputEl) return;
-                    if (text.includes(it.name)) {
-                        inputEl.value = 1;
+
+                    let index = cleanText.indexOf(it.name);
+                    if (index !== -1) {
+                        let qty = 1;
+                        let sub = cleanText.substring(index + it.name.length, index + it.name.length + 15);
+                        let match = sub.match(/x\s*([0-9]+)/i) || sub.match(/([0-9]+)/);
+                        if (match && match[1]) {
+                            let parsed = parseInt(match[1], 10);
+                            if (parsed > 0 && parsed < 100) {
+                                qty = parsed;
+                            }
+                        }
+                        inputEl.value = qty;
                         matchedCount++;
                     }
                 });
 
-                statusEl.innerText = `✨ AI 분석 완료! ${matchedCount}개 물품 자동 인식.`;
-                alert(`AI 분석 완료! ${matchedCount}개의 물품을 인식했습니다.`);
+                statusEl.innerText = `✨ AI 분석 완료! 총 ${matchedCount}개의 물품을 인식했습니다.`;
+                alert(`AI 분석 완료! 총 ${matchedCount}개의 물품을 찾아 수량을 자동으로 채웠습니다.`);
             } catch (err) {
                 statusEl.innerText = '❌ 분석 실패. 수동으로 입력해주세요.';
+                alert('AI 분석 중 오류가 발생했습니다.');
             }
+        }
+
+        function invertImageColors(imgElement) {
+            return new Promise((resolve) => {
+                const canvas = document.createElement('canvas');
+                const ctx = canvas.getContext('2d');
+                canvas.width = imgElement.naturalWidth || imgElement.width;
+                canvas.height = imgElement.naturalHeight || imgElement.height;
+                ctx.drawImage(imgElement, 0, 0);
+
+                const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
+                const data = imgData.data;
+                for (let i = 0; i < data.length; i += 4) {
+                    data[i] = 255 - data[i];
+                    data[i + 1] = 255 - data[i + 1];
+                    data[i + 2] = 255 - data[i + 2];
+                }
+                ctx.putImageData(imgData, 0, 0);
+                resolve(canvas.toDataURL());
+            });
         }
 
         function submitCartCalculation() {
@@ -773,7 +783,7 @@
 
         function clearStats() {
             if (confirm('통계 기록을 초기화하시겠습니까?')) {
-                localStorage.removeItem('rob_logs_v6');
+                localStorage.removeItem('rob_logs_v8');
                 renderStats();
             }
         }
