@@ -264,27 +264,27 @@
         ];
 
         function getItems() {
-            let data = localStorage.getItem('rob_items_v11');
+            let data = localStorage.getItem('rob_items_v12');
             return data ? JSON.parse(data) : defaultItems;
         }
         function saveItems(items) {
-            localStorage.setItem('rob_items_v11', JSON.stringify(items));
+            localStorage.setItem('rob_items_v12', JSON.stringify(items));
         }
 
         function getHouses() {
-            let data = localStorage.getItem('rob_houses_v11');
+            let data = localStorage.getItem('rob_houses_v12');
             return data ? JSON.parse(data) : defaultHouses;
         }
         function saveHouses(houses) {
-            localStorage.setItem('rob_houses_v11', JSON.stringify(houses));
+            localStorage.setItem('rob_houses_v12', JSON.stringify(houses));
         }
 
         function getLogs() {
-            let data = localStorage.getItem('rob_logs_v11');
+            let data = localStorage.getItem('rob_logs_v12');
             return data ? JSON.parse(data) : [];
         }
         function saveLogs(logs) {
-            localStorage.setItem('rob_logs_v11', JSON.stringify(logs));
+            localStorage.setItem('rob_logs_v12', JSON.stringify(logs));
         }
 
         function getInviteCodes() {
@@ -635,7 +635,7 @@
                 }
             });
 
-            document.getElementById('liveItemCount',).innerText = `${totalCount}개`;
+            document.getElementById('liveItemCount').innerText = `${totalCount}개`;
             document.getElementById('liveTotalEarnings').innerText = `${totalCash.toLocaleString()}원`;
         }
 
@@ -651,7 +651,7 @@
             }
         }
 
-        // 🤖 한글+영어 복합 인식 모델('kor+eng') 적용 및 정밀 파싱
+        // 🤖 공백 무시 통합 매칭 시스템을 통한 완벽한 OCR 파싱
         async function runAiOcrAnalysis() {
             const previewImg = document.getElementById('imagePreview');
             const statusEl = document.getElementById('aiStatusText');
@@ -661,29 +661,37 @@
                 return;
             }
 
-            statusEl.innerText = '🤖 AI가 한글/영문 텍스트를 분석 중입니다...';
+            statusEl.innerText = '🤖 AI가 텍스트를 공백 없이 정밀 분석 중입니다...';
 
             try {
                 const processedImageUrl = await preprocessImageForOcr(previewImg);
 
-                // 'kor+eng' 언어팩 사용으로 한글 물품명 정확 인식 복구
                 const { data: { text } } = await Tesseract.recognize(
                     processedImageUrl,
                     'kor+eng',
                     { logger: m => console.log(m) }
                 );
 
-                console.log("정밀 kor+eng OCR 인식 결과:", text);
+                console.log("OCR 원본 텍스트:", text);
+
+                // 핵심: 공백, 줄바꿈 등을 모두 제거하여 단어들을 일직선으로 연결
+                let normalizedText = text.replace(/[\s\r\n]+/g, '').toLowerCase();
+                console.log("정규화된 텍스트:", normalizedText);
 
                 let items = getItems();
                 let matchedCount = 0;
 
                 // 현금 인식 (₩ 또는 W 뒤의 숫자)
-                let cashMatch = text.match(/[W₩]\s*([0-9,]+)/i);
-                if (cashMatch && cashMatch[1]) {
-                    let parsedCash = parseInt(cashMatch[1].replace(/,/g, ''), 10);
-                    if (parsedCash > 1000) {
-                        document.getElementById('extraCashInput').value = parsedCash;
+                let cashMatches = text.match(/[W₩]\s*([0-9,]+)/g);
+                let totalExtraCash = 0;
+                if (cashMatches) {
+                    cashMatches.forEach(cm => {
+                        let numStr = cm.replace(/[^0-9]/g, '');
+                        let val = parseInt(numStr, 10);
+                        if (val > 0) totalExtraCash += val;
+                    });
+                    if (totalExtraCash > 0) {
+                        document.getElementById('extraCashInput').value = totalExtraCash;
                     }
                 }
 
@@ -691,15 +699,17 @@
                     let inputEl = document.getElementById(`cart_qty_${idx}`);
                     if (!inputEl) return;
 
-                    let targetName = it.name.trim();
-                    let index = text.indexOf(targetName);
+                    // 아이템 이름에서 공백 제거 후 검색
+                    let normName = it.name.replace(/\s+/g, '').toLowerCase();
+                    let pos = normalizedText.indexOf(normName);
 
-                    if (index !== -1) {
+                    if (pos !== -1) {
                         let qty = 1;
-                        let sub = text.substring(index + targetName.length, index + targetName.length + 15);
-                        let match = sub.match(/[xX]\s*([0-9]+)/) || sub.match(/([0-9]+)/);
-                        if (match && match[1]) {
-                            let parsed = parseInt(match[1], 10);
+                        // 물품 이름 바로 뒤의 8글자 내에서 숫자 찾기 (예: x3 등에서 3 추출)
+                        let sub = normalizedText.substring(pos + normName.length, pos + normName.length + 8);
+                        let numMatch = sub.match(/([0-9]+)/);
+                        if (numMatch && numMatch[1]) {
+                            let parsed = parseInt(numMatch[1], 10);
                             if (parsed > 0 && parsed < 100) {
                                 qty = parsed;
                             }
@@ -711,7 +721,7 @@
 
                 calculateLiveTotal();
                 statusEl.innerText = `✨ AI 분석 완료! 총 ${matchedCount}개의 물품을 인식했습니다.`;
-                alert(`AI 분석 완료! 총 ${matchedCount}개의 물품을 인식하여 장바구니에 채웠습니다.`);
+                alert(`AI 분석 완료! 총 ${matchedCount}개의 물품을 인식하여 장바구니에 채웠습니다. 수량을 확인해 주세요.`);
             } catch (err) {
                 console.error(err);
                 statusEl.innerText = '❌ 분석 실패. 수동으로 입력해주세요.';
@@ -719,16 +729,15 @@
             }
         }
 
-        // 그레이스케일 및 명암비 향상 전처리 함수
         function preprocessImageForOcr(imgElement) {
             return new Promise((resolve) => {
                 const canvas = document.createElement('canvas');
                 const ctx = canvas.getContext('2d');
-                const scale = 3; // 3배 확대
+                const scale = 3;
                 canvas.width = (imgElement.naturalWidth || imgElement.width) * scale;
                 canvas.height = (imgElement.naturalHeight || imgElement.height) * scale;
 
-                ctx.imageSmoothingEnabled = true;
+                ctx.imageSmoothingEnabled = false;
                 ctx.drawImage(imgElement, 0, 0, canvas.width, canvas.height);
 
                 const imgData = ctx.getImageData(0, 0, canvas.width, canvas.height);
@@ -736,8 +745,7 @@
 
                 for (let i = 0; i < data.length; i += 4) {
                     let avg = (data[i] + data[i + 1] + data[i + 2]) / 3;
-                    // 명암비를 높여 흰색 글씨와 어두운 배경 구분 강화
-                    let val = avg > 120 ? 255 : 0;
+                    let val = avg > 110 ? 255 : 0; // 이진화 임계값 최적화
                     data[i]     = val;
                     data[i + 1] = val;
                     data[i + 2] = val;
@@ -860,7 +868,7 @@
 
         function clearStats() {
             if (confirm('통계 기록을 초기화하시겠습니까?')) {
-                localStorage.removeItem('rob_logs_v11');
+                localStorage.removeItem('rob_logs_v12');
                 renderStats();
             }
         }
